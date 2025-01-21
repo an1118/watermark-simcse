@@ -1,0 +1,133 @@
+  0%|                                                                                                                                                                                                                                        | 0/5160 [00:00<?, ?it/s][WARNING|logging.py:313] 2025-01-21 09:20:04,867 >> You're using a RobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 656, in <module>
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2531, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3675, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/trainers.py", line 585, in compute_loss
+    outputs = model(**inputs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 820, in forward
+    return model_forward(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 808, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
+    return func(*args, **kwargs)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/models.py", line 580, in forward
+    return cl_forward(self,
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/models.py", line 198, in cl_forward
+    outputs = cls.roberta(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 976, in forward
+    encoder_outputs = self.encoder(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 631, in forward
+    layer_outputs = layer_module(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 520, in forward
+    self_attention_outputs = self.attention(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 456, in forward
+    attention_output = self.output(self_outputs[0], hidden_states)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 398, in forward
+    hidden_states = self.dropout(hidden_states)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/dropout.py", line 70, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/functional.py", line 1425, in dropout
+    _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 90.00 MiB. GPU 0 has a total capacity of 47.54 GiB of which 16.06 MiB is free. Process 3785342 has 26.24 GiB memory in use. Including non-PyTorch memory, this process has 21.27 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 15.74 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 656, in <module>
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2531, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3675, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/trainers.py", line 585, in compute_loss
+    outputs = model(**inputs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 820, in forward
+    return model_forward(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 808, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
+    return func(*args, **kwargs)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/models.py", line 580, in forward
+    return cl_forward(self,
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/simcse/models.py", line 198, in cl_forward
+    outputs = cls.roberta(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 976, in forward
+    encoder_outputs = self.encoder(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 631, in forward
+    layer_outputs = layer_module(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 520, in forward
+    self_attention_outputs = self.attention(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 456, in forward
+    attention_output = self.output(self_outputs[0], hidden_states)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/models/roberta/modeling_roberta.py", line 398, in forward
+    hidden_states = self.dropout(hidden_states)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/dropout.py", line 70, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/functional.py", line 1425, in dropout
+    _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 90.00 MiB. GPU 0 has a total capacity of 47.54 GiB of which 16.06 MiB is free. Process 3785342 has 26.24 GiB memory in use. Including non-PyTorch memory, this process has 21.27 GiB memory in use. Of the allocated memory 20.95 GiB is allocated by PyTorch, and 15.74 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

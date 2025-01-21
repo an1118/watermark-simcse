@@ -1,0 +1,16 @@
+{"time":"2025-01-21T07:49:01.757402233Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T07:49:01.757430443Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_074901-mvlc67uh/logs/debug-core.log"}
+{"time":"2025-01-21T07:49:01.967058801Z","level":"INFO","msg":"created new stream","id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:01.967113261Z","level":"INFO","msg":"stream: started","id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:01.967525095Z","level":"INFO","msg":"sender: started","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:01.967563055Z","level":"INFO","msg":"handler: started","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:01.967535925Z","level":"INFO","msg":"writer: Do: started","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:02.162158748Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T07:49:17.320437384Z","level":"INFO","msg":"stream: closing","id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:17.320545073Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T07:49:17.322378619Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T07:49:17.833641417Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T07:49:17.925712262Z","level":"INFO","msg":"handler: closed","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:17.925750022Z","level":"INFO","msg":"writer: Close: closed","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:17.925791501Z","level":"INFO","msg":"sender: closed","stream_id":"mvlc67uh"}
+{"time":"2025-01-21T07:49:17.92584189Z","level":"INFO","msg":"stream: closed","id":"mvlc67uh"}

@@ -1,0 +1,100 @@
+  0%|                                                                                                                                                                                                                                        | 0/5160 [00:00<?, ?it/s][WARNING|logging.py:313] 2025-01-21 09:20:24,091 >> You're using a RobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+  0%|▏                                                                                                                                                                                                                             | 5/5160 [00:04<1:04:56,  1.32it/s][INFO|trainer.py:4226] 2025-01-21 09:20:28,198 >>
+{'loss': 3.378, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 3.3011770248413086, 'loss_2': 0.07684326171875, 'loss_3': -13.70328140258789, 'loss_4': 9.949840545654297, 'epoch': 0.01}
+{'loss': 3.7285, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 3.6451480388641357, 'loss_2': 0.08331298828125, 'loss_3': -13.331350326538086, 'loss_4': 9.92608642578125, 'epoch': 0.01}
+{'loss': 3.7025, 'grad_norm': inf, 'learning_rate': 3e-05, 'loss_1': 3.6336617469787598, 'loss_2': 0.06884765625, 'loss_3': -13.476580619812012, 'loss_4': 9.631412506103516, 'epoch': 0.02}
+{'loss': 3.2987, 'grad_norm': 129.12347412109375, 'learning_rate': 2.999418604651163e-05, 'loss_1': 3.232093334197998, 'loss_2': 0.066650390625, 'loss_3': -13.746009826660156, 'loss_4': 9.592080116271973, 'epoch': 0.02}
+{'loss': 3.6511, 'grad_norm': 119.08097839355469, 'learning_rate': 2.9988372093023255e-05, 'loss_1': 3.5762155055999756, 'loss_2': 0.07489013671875, 'loss_3': -13.561639785766602, 'loss_4': 9.703580856323242, 'epoch': 0.03}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 09:20:28,199 >>   Num examples = 1024
+[INFO|trainer.py:4231] 2025-01-21 09:20:28,199 >>   Batch size = 64
+  0%|▏                                                                                                                                                                                                                             | 5/5160 [00:07<1:04:56,  1.32it/s][INFO|trainer.py:3910] 2025-01-21 09:20:31,984 >> Saving model checkpoint to SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5
+[INFO|configuration_utils.py:420] 2025-01-21 09:20:31,986 >> Configuration saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5/config.json                                                                                
+{'eval_loss': 1.9247047901153564, 'eval_runtime': 3.784, 'eval_samples_per_second': 270.613, 'eval_steps_per_second': 4.228, 'eval_loss_1': 1.8714535236358643, 'eval_loss_2': 0.05325126647949219, 'eval_loss_3': -18.021099090576172, 'eval_loss_4': 9.700562477111816, 'epoch': 0.03}
+[INFO|modeling_utils.py:2988] 2025-01-21 09:20:32,657 >> Model weights saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5/model.safetensors
+[INFO|tokenization_utils_base.py:2491] 2025-01-21 09:20:32,658 >> tokenizer config file saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5/tokenizer_config.json
+[INFO|tokenization_utils_base.py:2500] 2025-01-21 09:20:32,659 >> Special tokens file saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5/special_tokens_map.json
+  0%|▍                                                                                                                                                                                                                            | 10/5160 [00:13<1:35:51,  1.12s/it][INFO|trainer.py:4226] 2025-01-21 09:20:37,177 >>
+{'loss': 3.4264, 'grad_norm': 134.86807250976562, 'learning_rate': 2.9982558139534887e-05, 'loss_1': 3.375044822692871, 'loss_2': 0.051361083984375, 'loss_3': -14.296751022338867, 'loss_4': 10.334550857543945, 'epoch': 0.03}
+{'loss': 2.9703, 'grad_norm': 133.23728942871094, 'learning_rate': 2.9976744186046512e-05, 'loss_1': 2.9128880500793457, 'loss_2': 0.057403564453125, 'loss_3': -14.669894218444824, 'loss_4': 10.662424087524414, 'epoch': 0.04}
+{'loss': 3.0678, 'grad_norm': 125.48140716552734, 'learning_rate': 2.997093023255814e-05, 'loss_1': 3.003011703491211, 'loss_2': 0.0648193359375, 'loss_3': -14.607527732849121, 'loss_4': 10.203727722167969, 'epoch': 0.05}
+{'loss': 2.6739, 'grad_norm': 127.95935821533203, 'learning_rate': 2.996511627906977e-05, 'loss_1': 2.6118435859680176, 'loss_2': 0.062042236328125, 'loss_3': -14.907721519470215, 'loss_4': 10.539966583251953, 'epoch': 0.05}
+{'loss': 2.7378, 'grad_norm': 118.41870880126953, 'learning_rate': 2.9959302325581394e-05, 'loss_1': 2.6846632957458496, 'loss_2': 0.0531005859375, 'loss_3': -14.664175987243652, 'loss_4': 10.718774795532227, 'epoch': 0.06}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 09:20:37,177 >>   Num examples = 1024
+[INFO|trainer.py:4231] 2025-01-21 09:20:37,178 >>   Batch size = 64
+  0%|▍                                                                                                                                                                                                                            | 10/5160 [00:16<1:35:51,  1.12s/it][INFO|trainer.py:3910] 2025-01-21 09:20:40,971 >> Saving model checkpoint to SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-10
+[INFO|configuration_utils.py:420] 2025-01-21 09:20:40,972 >> Configuration saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-10/config.json                                                                               
+{'eval_loss': 0.9388341903686523, 'eval_runtime': 3.7917, 'eval_samples_per_second': 270.066, 'eval_steps_per_second': 4.22, 'eval_loss_1': 0.9002026915550232, 'eval_loss_2': 0.038631439208984375, 'eval_loss_3': -18.238910675048828, 'eval_loss_4': 10.205299377441406, 'epoch': 0.06}
+[INFO|modeling_utils.py:2988] 2025-01-21 09:20:41,533 >> Model weights saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-10/model.safetensors
+[INFO|tokenization_utils_base.py:2491] 2025-01-21 09:20:41,535 >> tokenizer config file saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-10/tokenizer_config.json
+[INFO|tokenization_utils_base.py:2500] 2025-01-21 09:20:41,535 >> Special tokens file saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-10/special_tokens_map.json
+[INFO|trainer.py:4002] 2025-01-21 09:20:42,428 >> Deleting older checkpoint [SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-5] due to args.save_total_limit
+  0%|▋                                                                                                                                                                                                                            | 15/5160 [00:21<1:39:18,  1.16s/it][INFO|trainer.py:4226] 2025-01-21 09:20:46,055 >>
+{'loss': 2.1967, 'grad_norm': 119.08821105957031, 'learning_rate': 2.9953488372093026e-05, 'loss_1': 2.1513304710388184, 'loss_2': 0.04534912109375, 'loss_3': -15.036234855651855, 'loss_4': 10.872564315795898, 'epoch': 0.06}
+{'loss': 2.1642, 'grad_norm': 112.77388763427734, 'learning_rate': 2.994767441860465e-05, 'loss_1': 2.12882399559021, 'loss_2': 0.035400390625, 'loss_3': -14.78046989440918, 'loss_4': 10.464357376098633, 'epoch': 0.07}
+{'loss': 1.934, 'grad_norm': 118.91127014160156, 'learning_rate': 2.994186046511628e-05, 'loss_1': 1.9007594585418701, 'loss_2': 0.03326416015625, 'loss_3': -14.836845397949219, 'loss_4': 10.581418991088867, 'epoch': 0.08}
+{'loss': 1.7651, 'grad_norm': inf, 'learning_rate': 2.994186046511628e-05, 'loss_1': 1.7420002222061157, 'loss_2': 0.023101806640625, 'loss_3': -14.93431568145752, 'loss_4': 9.544042587280273, 'epoch': 0.08}
+{'loss': 1.6152, 'grad_norm': 111.01768493652344, 'learning_rate': 2.9936046511627906e-05, 'loss_1': 1.5866855382919312, 'loss_2': 0.02850341796875, 'loss_3': -14.947617530822754, 'loss_4': 10.435983657836914, 'epoch': 0.09}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 09:20:46,055 >>   Num examples = 1024
+[INFO|trainer.py:4231] 2025-01-21 09:20:46,056 >>   Batch size = 64
+  0%|▋                                                                                                                                                                                                                            | 15/5160 [00:25<1:39:18,  1.16s/it][INFO|trainer.py:3910] 2025-01-21 09:20:49,849 >> Saving model checkpoint to SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-15
+[INFO|configuration_utils.py:420] 2025-01-21 09:20:49,851 >> Configuration saved in SimCSE/result/twitter-roberta-base-sentiment/end2end-c4-loss_cl3_gr-wneg1/checkpoint-15/config.json                                                                               
+{'eval_loss': 0.48522481322288513, 'eval_runtime': 3.7922, 'eval_samples_per_second': 270.03, 'eval_steps_per_second': 4.219, 'eval_loss_1': 0.463509202003479, 'eval_loss_2': 0.021715641021728516, 'eval_loss_3': -18.203224182128906, 'eval_loss_4': 9.608739852905273, 'epoch': 0.09}
+Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 656, in <module>
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2598, in _inner_training_loop
+    self._maybe_log_save_evaluate(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3078, in _maybe_log_save_evaluate
+    self._save_checkpoint(model, trial)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3209, in _save_checkpoint
+    self.save_model(output_dir, _internal_call=True)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3828, in save_model
+    self._save(output_dir)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3932, in _save
+    self.model.save_pretrained(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/modeling_utils.py", line 2980, in save_pretrained
+    safe_save_file(shard, os.path.join(save_directory, shard_file), metadata={"format": "pt"})
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 286, in save_file
+    serialize_file(_flatten(tensors), filename, metadata=metadata)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 496, in _flatten
+    return {
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 500, in <dictcomp>
+    "data": _tobytes(v, k),
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 460, in _tobytes
+    return data.tobytes()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 656, in <module>
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2598, in _inner_training_loop
+    self._maybe_log_save_evaluate(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3078, in _maybe_log_save_evaluate
+    self._save_checkpoint(model, trial)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3209, in _save_checkpoint
+    self.save_model(output_dir, _internal_call=True)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3828, in save_model
+    self._save(output_dir)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3932, in _save
+    self.model.save_pretrained(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/modeling_utils.py", line 2980, in save_pretrained
+    safe_save_file(shard, os.path.join(save_directory, shard_file), metadata={"format": "pt"})
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 286, in save_file
+    serialize_file(_flatten(tensors), filename, metadata=metadata)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 496, in _flatten
+    return {
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 500, in <dictcomp>
+    "data": _tobytes(v, k),
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/safetensors/torch.py", line 460, in _tobytes
+    return data.tobytes()
+KeyboardInterrupt

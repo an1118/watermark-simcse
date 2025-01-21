@@ -1,0 +1,101 @@
+  0%|                                                                                                                                                           | 0/1373 [00:00<?, ?it/s][WARNING|logging.py:313] 2025-01-21 08:00:23,302 >> You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+  0%|▌                                                                                                                                                  | 5/1373 [00:05<25:26,  1.12s/it][INFO|trainer.py:4226] 2025-01-21 08:00:29,210 >>
+{'loss': 1.93, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 1.9038329124450684, 'loss_2': 0.026153564453125, 'loss_3': -9.245519638061523, 'loss_4': 6.8814263343811035, 'epoch': 0.0}
+{'loss': 1.0342, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 1.027780532836914, 'loss_2': 0.00638580322265625, 'loss_3': -10.935941696166992, 'loss_4': 8.517062187194824, 'epoch': 0.0}
+{'loss': 0.8353, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 0.8216870427131653, 'loss_2': 0.013641357421875, 'loss_3': -11.950655937194824, 'loss_4': 11.409819602966309, 'epoch': 0.0}
+{'loss': 0.6988, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 0.673634946346283, 'loss_2': 0.0251922607421875, 'loss_3': -10.743675231933594, 'loss_4': 8.901920318603516, 'epoch': 0.0}
+{'loss': 1.0965, 'grad_norm': 144.64649963378906, 'learning_rate': 2.9978150036416606e-05, 'loss_1': 1.0961049795150757, 'loss_2': 0.00035071372985839844, 'loss_3': -13.042381286621094, 'loss_4': 12.001609802246094, 'epoch': 0.0}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 08:00:29,210 >>   Num examples = 1024
+[INFO|trainer.py:4231] 2025-01-21 08:00:29,210 >>   Batch size = 8
+  0%|▌                                                                                                                                                  | 5/1373 [00:46<25:26,  1.12s/it][INFO|trainer.py:3910] 2025-01-21 08:01:09,720 >> Saving model checkpoint to SimCSE-Watermark/result/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1/checkpoint-5
+[INFO|configuration_utils.py:420] 2025-01-21 08:01:09,722 >> Configuration saved in SimCSE-Watermark/result/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1/checkpoint-5/config.json
+{'eval_loss': 1.2137904167175293, 'eval_runtime': 40.508, 'eval_samples_per_second': 25.279, 'eval_steps_per_second': 3.16, 'eval_loss_1': 1.2030422687530518, 'eval_loss_2': 0.010748117230832577, 'eval_loss_3': -11.733766555786133, 'eval_loss_4': 10.309422492980957, 'epoch': 0.0}
+[INFO|modeling_utils.py:2996] 2025-01-21 08:01:16,161 >> The model is bigger than the maximum size per checkpoint (5GB) and is going to be split in 2 checkpoint shards. You can find where each parameters has been saved in the index located at SimCSE-Watermark/result/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1/checkpoint-5/model.safetensors.index.json.
+[INFO|tokenization_utils_base.py:2491] 2025-01-21 08:01:16,162 >> tokenizer config file saved in SimCSE-Watermark/result/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1/checkpoint-5/tokenizer_config.json
+[INFO|tokenization_utils_base.py:2500] 2025-01-21 08:01:16,163 >> Special tokens file saved in SimCSE-Watermark/result/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1/checkpoint-5/special_tokens_map.json
+  1%|█                                                                                                                                               | 10/1373 [01:10<2:04:49,  5.49s/it][INFO|trainer.py:4226] 2025-01-21 08:01:33,575 >>
+{'loss': 0.6519, 'grad_norm': 115.92876434326172, 'learning_rate': 2.9956300072833215e-05, 'loss_1': 0.6354038715362549, 'loss_2': 0.016448974609375, 'loss_3': -14.865310668945312, 'loss_4': 12.743680953979492, 'epoch': 0.0}
+{'loss': 1.1539, 'grad_norm': 133.92520141601562, 'learning_rate': 2.993445010924982e-05, 'loss_1': 1.1364456415176392, 'loss_2': 0.0174713134765625, 'loss_3': -13.234085083007812, 'loss_4': 10.600133895874023, 'epoch': 0.01}
+{'loss': 1.3483, 'grad_norm': inf, 'learning_rate': 2.993445010924982e-05, 'loss_1': 1.3407608270645142, 'loss_2': 0.007541656494140625, 'loss_3': -11.099344253540039, 'loss_4': 9.863637924194336, 'epoch': 0.01}
+{'loss': 1.1796, 'grad_norm': 173.46270751953125, 'learning_rate': 2.9912600145666423e-05, 'loss_1': 1.176140546798706, 'loss_2': 0.0034427642822265625, 'loss_3': -11.074966430664062, 'loss_4': 8.844461441040039, 'epoch': 0.01}
+{'loss': 0.8903, 'grad_norm': 124.71143341064453, 'learning_rate': 2.989075018208303e-05, 'loss_1': 0.8779247403144836, 'loss_2': 0.01239013671875, 'loss_3': -11.551216125488281, 'loss_4': 10.512215614318848, 'epoch': 0.01}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 08:01:33,575 >>   Num examples = 1024
+[INFO|trainer.py:4231] 2025-01-21 08:01:33,575 >>   Batch size = 8
+                                                                                                                                                                                         Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/train.py", line 656, in <module>                                           | 54/128 [00:16<00:23,  3.13it/s]
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2598, in _inner_training_loop
+    self._maybe_log_save_evaluate(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3071, in _maybe_log_save_evaluate
+    metrics = self._evaluate(trial, ignore_keys_for_eval)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3025, in _evaluate
+    metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4073, in evaluate
+    output = eval_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4267, in evaluation_loop
+    losses, logits, labels = self.prediction_step(model, inputs, prediction_loss_only, ignore_keys=ignore_keys)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4483, in prediction_step
+    loss, outputs = self.compute_loss(model, inputs, return_outputs=True)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/trainers.py", line 585, in compute_loss
+    outputs = model(**inputs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 820, in forward
+    return model_forward(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 808, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
+    return func(*args, **kwargs)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 643, in forward
+    return cl_forward(self,
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 256, in cl_forward
+    pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 237, in last_token_pool
+    if left_padding:
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/train.py", line 656, in <module>
+    main()
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/train.py", line 620, in main
+    train_result = trainer.train(model_path=model_path)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2171, in train
+    return inner_training_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 2598, in _inner_training_loop
+    self._maybe_log_save_evaluate(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3071, in _maybe_log_save_evaluate
+    metrics = self._evaluate(trial, ignore_keys_for_eval)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 3025, in _evaluate
+    metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4073, in evaluate
+    output = eval_loop(
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4267, in evaluation_loop
+    losses, logits, labels = self.prediction_step(model, inputs, prediction_loss_only, ignore_keys=ignore_keys)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/transformers/trainer.py", line 4483, in prediction_step
+    loss, outputs = self.compute_loss(model, inputs, return_outputs=True)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/trainers.py", line 585, in compute_loss
+    outputs = model(**inputs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 820, in forward
+    return model_forward(*args, **kwargs)
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/accelerate/utils/operations.py", line 808, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+  File "/mnt/data/lian/anaconda3/envs/watermark-simcse/lib/python3.10/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
+    return func(*args, **kwargs)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 643, in forward
+    return cl_forward(self,
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 256, in cl_forward
+    pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+  File "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/simcse/models.py", line 237, in last_token_pool
+    if left_padding:
+KeyboardInterrupt

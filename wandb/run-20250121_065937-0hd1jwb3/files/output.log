@@ -1,0 +1,55 @@
+  0%|                                                                                                                                                                                                                                           | 0/8 [00:00<?, ?it/s][WARNING|logging.py:313] 2025-01-21 06:59:37,989 >> You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+ 62%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉                                                                                     | 5/8 [00:05<00:03,  1.07s/it][INFO|trainer.py:4226] 2025-01-21 06:59:43,736 >>
+{'loss': 3.5828, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 3.574632167816162, 'loss_2': 0.0081634521484375, 'loss_3': -9.328385353088379, 'loss_4': 8.89427375793457, 'epoch': 0.25}
+{'loss': 3.9869, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 3.946178913116455, 'loss_2': 0.04071044921875, 'loss_3': -10.609344482421875, 'loss_4': 10.623645782470703, 'epoch': 0.5}
+{'loss': 2.5517, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 2.536811113357544, 'loss_2': 0.01488494873046875, 'loss_3': -11.12866497039795, 'loss_4': 10.601709365844727, 'epoch': 0.75}
+{'loss': 3.6369, 'grad_norm': nan, 'learning_rate': 3e-05, 'loss_1': 3.6234426498413086, 'loss_2': 0.0134124755859375, 'loss_3': -13.418230056762695, 'loss_4': 13.514850616455078, 'epoch': 1.0}
+{'loss': 3.8098, 'grad_norm': inf, 'learning_rate': 3e-05, 'loss_1': 3.7644412517547607, 'loss_2': 0.045379638671875, 'loss_3': -10.328704833984375, 'loss_4': 10.059577941894531, 'epoch': 1.25}
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 06:59:43,736 >>   Num examples = 8
+[INFO|trainer.py:4231] 2025-01-21 06:59:43,736 >>   Batch size = 8
+ 62%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉                                                                                     | 5/8 [00:06<00:03,  1.07s/it][INFO|trainer.py:3910] 2025-01-21 06:59:44,055 >> Saving model checkpoint to result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5
+[INFO|configuration_utils.py:420] 2025-01-21 06:59:44,058 >> Configuration saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5/config.json                                                                                
+{'eval_loss': 4.0078535079956055, 'eval_runtime': 0.3179, 'eval_samples_per_second': 25.167, 'eval_steps_per_second': 3.146, 'eval_loss_1': 3.9954020977020264, 'eval_loss_2': 0.012451171875, 'eval_loss_3': -6.817693710327148, 'eval_loss_4': 7.042447090148926, 'epoch': 1.25}
+[INFO|modeling_utils.py:2996] 2025-01-21 06:59:50,597 >> The model is bigger than the maximum size per checkpoint (5GB) and is going to be split in 2 checkpoint shards. You can find where each parameters has been saved in the index located at result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5/model.safetensors.index.json.
+[INFO|tokenization_utils_base.py:2491] 2025-01-21 06:59:50,598 >> tokenizer config file saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5/tokenizer_config.json
+[INFO|tokenization_utils_base.py:2500] 2025-01-21 06:59:50,599 >> Special tokens file saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5/special_tokens_map.json
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 8/8 [00:16<00:00,  2.29s/it][INFO|trainer.py:2643] 2025-01-21 06:59:54,687 >>                            
+{'loss': 2.9637, 'grad_norm': 210.67103576660156, 'learning_rate': 2.625e-05, 'loss_1': 2.9540181159973145, 'loss_2': 0.0096435546875, 'loss_3': -14.087626457214355, 'loss_4': 13.471264839172363, 'epoch': 1.5}
+{'loss': 2.4907, 'grad_norm': 207.68447875976562, 'learning_rate': 2.25e-05, 'loss_1': 2.476552724838257, 'loss_2': 0.014129638671875, 'loss_3': -10.754276275634766, 'loss_4': 10.026235580444336, 'epoch': 1.75}
+{'loss': 3.1233, 'grad_norm': 191.4547576904297, 'learning_rate': 1.8750000000000002e-05, 'loss_1': 3.1227526664733887, 'loss_2': 0.0005693435668945312, 'loss_3': -10.34044075012207, 'loss_4': 9.347124099731445, 'epoch': 2.0}
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+[INFO|trainer.py:2881] 2025-01-21 06:59:54,687 >> Loading best model from result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/checkpoint-5 (score: 4.0078535079956055).
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 8/8 [00:17<00:00,  2.22s/it]
+{'train_runtime': 18.6468, 'train_samples_per_second': 3.432, 'train_steps_per_second': 0.429, 'train_loss': 3.268215388059616, 'epoch': 2.0}
+[INFO|trainer.py:3910] 2025-01-21 06:59:55,710 >> Saving model checkpoint to result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32
+[INFO|configuration_utils.py:420] 2025-01-21 06:59:55,711 >> Configuration saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/config.json
+[INFO|modeling_utils.py:2996] 2025-01-21 07:00:02,205 >> The model is bigger than the maximum size per checkpoint (5GB) and is going to be split in 2 checkpoint shards. You can find where each parameters has been saved in the index located at result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/model.safetensors.index.json.
+[INFO|tokenization_utils_base.py:2491] 2025-01-21 07:00:02,206 >> tokenizer config file saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/tokenizer_config.json
+[INFO|tokenization_utils_base.py:2500] 2025-01-21 07:00:02,206 >> Special tokens file saved in result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg32/special_tokens_map.json
+01/21/2025 07:00:02 - INFO - __main__ -   ***** Train results *****
+01/21/2025 07:00:02 - INFO - __main__ -     epoch = 2.0
+01/21/2025 07:00:02 - INFO - __main__ -     total_flos = 483600330915840.0
+01/21/2025 07:00:02 - INFO - __main__ -     train_loss = 3.268215388059616
+01/21/2025 07:00:02 - INFO - __main__ -     train_runtime = 18.6468
+01/21/2025 07:00:02 - INFO - __main__ -     train_samples_per_second = 3.432
+01/21/2025 07:00:02 - INFO - __main__ -     train_steps_per_second = 0.429
+01/21/2025 07:00:02 - INFO - __main__ -   *** Evaluate ***
+[INFO|trainer.py:4226] 2025-01-21 07:00:02,372 >>
+***** Running Evaluation *****
+[INFO|trainer.py:4228] 2025-01-21 07:00:02,372 >>   Num examples = 8
+[INFO|trainer.py:4231] 2025-01-21 07:00:02,372 >>   Batch size = 8
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 1205.61it/s]
+01/21/2025 07:00:02 - INFO - __main__ -   ***** Eval results *****
+01/21/2025 07:00:02 - INFO - __main__ -     epoch = 2.0
+01/21/2025 07:00:02 - INFO - __main__ -     eval_loss = 4.0078535079956055
+01/21/2025 07:00:02 - INFO - __main__ -     eval_loss_1 = 3.9954020977020264
+01/21/2025 07:00:02 - INFO - __main__ -     eval_loss_2 = 0.012451171875
+01/21/2025 07:00:02 - INFO - __main__ -     eval_loss_3 = -6.817693710327148
+01/21/2025 07:00:02 - INFO - __main__ -     eval_loss_4 = 7.042447090148926
+01/21/2025 07:00:02 - INFO - __main__ -     eval_runtime = 0.3205
+01/21/2025 07:00:02 - INFO - __main__ -     eval_samples_per_second = 24.958
+01/21/2025 07:00:02 - INFO - __main__ -     eval_steps_per_second = 3.12

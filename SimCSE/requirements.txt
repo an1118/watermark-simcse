@@ -1,0 +1,10 @@
+transformers
+scipy
+datasets
+pandas
+scikit-learn
+prettytable
+gradio
+torch
+setuptools
+accelerate

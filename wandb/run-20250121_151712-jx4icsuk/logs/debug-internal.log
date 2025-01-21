@@ -1,0 +1,16 @@
+{"time":"2025-01-21T15:17:12.837554979Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T15:17:12.837585399Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_151712-jx4icsuk/logs/debug-core.log"}
+{"time":"2025-01-21T15:17:13.046778793Z","level":"INFO","msg":"created new stream","id":"jx4icsuk"}
+{"time":"2025-01-21T15:17:13.04774552Z","level":"INFO","msg":"stream: started","id":"jx4icsuk"}
+{"time":"2025-01-21T15:17:13.047787919Z","level":"INFO","msg":"writer: Do: started","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T15:17:13.047801819Z","level":"INFO","msg":"sender: started","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T15:17:13.047879418Z","level":"INFO","msg":"handler: started","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T15:17:13.251624056Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T17:24:29.392028122Z","level":"INFO","msg":"stream: closing","id":"jx4icsuk"}
+{"time":"2025-01-21T17:24:29.392084302Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T17:24:29.393043458Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T17:24:29.924553087Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T17:24:30.06267394Z","level":"INFO","msg":"handler: closed","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T17:24:30.062729839Z","level":"INFO","msg":"writer: Close: closed","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T17:24:30.062749729Z","level":"INFO","msg":"sender: closed","stream_id":"jx4icsuk"}
+{"time":"2025-01-21T17:24:30.062796568Z","level":"INFO","msg":"stream: closed","id":"jx4icsuk"}

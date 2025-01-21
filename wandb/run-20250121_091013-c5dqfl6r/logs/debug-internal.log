@@ -1,0 +1,16 @@
+{"time":"2025-01-21T09:10:13.79476761Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T09:10:13.794797839Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_091013-c5dqfl6r/logs/debug-core.log"}
+{"time":"2025-01-21T09:10:14.004435187Z","level":"INFO","msg":"created new stream","id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:14.004487036Z","level":"INFO","msg":"stream: started","id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:14.004532476Z","level":"INFO","msg":"writer: Do: started","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:14.004532616Z","level":"INFO","msg":"sender: started","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:14.004581405Z","level":"INFO","msg":"handler: started","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:14.15463646Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T09:10:26.833373799Z","level":"INFO","msg":"stream: closing","id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:26.833427108Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T09:10:26.834295877Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T09:10:27.2295891Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T09:10:27.385898055Z","level":"INFO","msg":"handler: closed","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:27.385962605Z","level":"INFO","msg":"writer: Close: closed","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:27.385970854Z","level":"INFO","msg":"sender: closed","stream_id":"c5dqfl6r"}
+{"time":"2025-01-21T09:10:27.386042244Z","level":"INFO","msg":"stream: closed","id":"c5dqfl6r"}

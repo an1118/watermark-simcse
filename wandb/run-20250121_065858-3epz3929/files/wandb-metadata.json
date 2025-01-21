@@ -1,0 +1,121 @@
+{
+  "os": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.10.15",
+  "startedAt": "2025-01-21T06:58:58.590875Z",
+  "args": [
+    "--model_name_or_path",
+    "Alibaba-NLP/gte-Qwen2-1.5B-instruct",
+    "--train_file",
+    "/mnt/data2/lian/projects/watermark/data/small32-c4-train-simcse-all-filtered-formatted.csv",
+    "--validation_file",
+    "/mnt/data2/lian/projects/watermark/data/small8-c4-test-simcse-all-filtered-formatted.csv",
+    "--output_dir",
+    "result/testt/end2end-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1",
+    "--hard_negative_weight",
+    "0.0",
+    "--loss_function_id",
+    "2",
+    "--num_train_epochs",
+    "2",
+    "--per_device_train_batch_size",
+    "8",
+    "--per_device_eval_batch_size",
+    "8",
+    "--learning_rate",
+    "3e-5",
+    "--max_seq_length",
+    "320",
+    "--evaluation_strategy",
+    "steps",
+    "--save_strategy",
+    "best",
+    "--save_total_limit",
+    "1",
+    "--load_best_model_at_end",
+    "--metric_for_best_model",
+    "loss",
+    "--eval_steps",
+    "5",
+    "--pooler_type",
+    "cls",
+    "--overwrite_output_dir",
+    "--temp",
+    "0.05",
+    "--do_train",
+    "--do_eval",
+    "--fp16",
+    "--report_to=wandb",
+    "--run_name=test-wm-simcse-gte-Qwen2-1.5B-instruct-c4-loss_cl2_gr-wneg1-freeze",
+    "--logging_steps=1"
+  ],
+  "program": "/mnt/data2/lian/projects/watermark/watermark-simcse/SimCSE-Watermark/train.py",
+  "codePath": "SimCSE-Watermark/train.py",
+  "email": "anli00001118@gmail.com",
+  "root": "/mnt/data2/lian/projects/watermark/watermark-simcse",
+  "host": "katrina1.cs.ucsb.edu",
+  "username": "lian",
+  "executable": "/mnt/data/lian/anaconda3/envs/watermark-simcse/bin/python",
+  "codePathLocal": "SimCSE-Watermark/train.py",
+  "cpu_count": 56,
+  "cpu_count_logical": 112,
+  "gpu": "NVIDIA RTX A6000",
+  "gpu_count": 7,
+  "disk": {
+    "/": {
+      "total": "402333241344",
+      "used": "357664006144"
+    }
+  },
+  "memory": {
+    "total": "540867055616"
+  },
+  "cpu": {
+    "count": 56,
+    "countLogical": 112
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "51527024640",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    }
+  ],
+  "cudaVersion": "12.2"
+}

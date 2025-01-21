@@ -1,0 +1,16 @@
+{"time":"2025-01-21T12:20:02.232270089Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T12:20:02.232287229Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_122002-yn3pvrta/logs/debug-core.log"}
+{"time":"2025-01-21T12:20:02.542176341Z","level":"INFO","msg":"created new stream","id":"yn3pvrta"}
+{"time":"2025-01-21T12:20:02.542751403Z","level":"INFO","msg":"stream: started","id":"yn3pvrta"}
+{"time":"2025-01-21T12:20:02.542789653Z","level":"INFO","msg":"writer: Do: started","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T12:20:02.542791013Z","level":"INFO","msg":"handler: started","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T12:20:02.542813442Z","level":"INFO","msg":"sender: started","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T12:20:02.720083444Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T14:27:35.122303635Z","level":"INFO","msg":"stream: closing","id":"yn3pvrta"}
+{"time":"2025-01-21T14:27:35.122393684Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T14:27:35.123431671Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T14:27:35.592527097Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T14:27:35.720955482Z","level":"INFO","msg":"handler: closed","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T14:27:35.721031161Z","level":"INFO","msg":"writer: Close: closed","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T14:27:35.721041821Z","level":"INFO","msg":"sender: closed","stream_id":"yn3pvrta"}
+{"time":"2025-01-21T14:27:35.72112868Z","level":"INFO","msg":"stream: closed","id":"yn3pvrta"}

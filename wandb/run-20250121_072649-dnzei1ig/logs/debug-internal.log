@@ -1,0 +1,16 @@
+{"time":"2025-01-21T07:26:49.159041276Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T07:26:49.159057985Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_072649-dnzei1ig/logs/debug-core.log"}
+{"time":"2025-01-21T07:26:49.36857225Z","level":"INFO","msg":"created new stream","id":"dnzei1ig"}
+{"time":"2025-01-21T07:26:49.36862166Z","level":"INFO","msg":"stream: started","id":"dnzei1ig"}
+{"time":"2025-01-21T07:26:49.368648879Z","level":"INFO","msg":"writer: Do: started","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:26:49.368676259Z","level":"INFO","msg":"sender: started","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:26:49.368689999Z","level":"INFO","msg":"handler: started","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:26:49.500570689Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T07:27:04.140924945Z","level":"INFO","msg":"stream: closing","id":"dnzei1ig"}
+{"time":"2025-01-21T07:27:04.140997535Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T07:27:04.141893763Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T07:27:04.582080979Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T07:27:04.706613911Z","level":"INFO","msg":"handler: closed","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:27:04.706670821Z","level":"INFO","msg":"writer: Close: closed","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:27:04.7066847Z","level":"INFO","msg":"sender: closed","stream_id":"dnzei1ig"}
+{"time":"2025-01-21T07:27:04.706755429Z","level":"INFO","msg":"stream: closed","id":"dnzei1ig"}

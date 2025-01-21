@@ -1,0 +1,16 @@
+{"time":"2025-01-21T08:51:59.992719813Z","level":"INFO","msg":"using version","core version":"0.19.0"}
+{"time":"2025-01-21T08:51:59.992747683Z","level":"INFO","msg":"created symlink","path":"/mnt/data2/lian/projects/watermark/watermark-simcse/wandb/run-20250121_085159-xmo2cdic/logs/debug-core.log"}
+{"time":"2025-01-21T08:52:00.202583277Z","level":"INFO","msg":"created new stream","id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:00.202656326Z","level":"INFO","msg":"stream: started","id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:00.202688486Z","level":"INFO","msg":"handler: started","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:00.202688326Z","level":"INFO","msg":"writer: Do: started","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:00.202757395Z","level":"INFO","msg":"sender: started","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:00.3604102Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T08:52:12.30870454Z","level":"INFO","msg":"stream: closing","id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:12.30878008Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T08:52:12.309601351Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T08:52:12.769193283Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T08:52:12.905853913Z","level":"INFO","msg":"handler: closed","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:12.905913872Z","level":"INFO","msg":"writer: Close: closed","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:12.905932452Z","level":"INFO","msg":"sender: closed","stream_id":"xmo2cdic"}
+{"time":"2025-01-21T08:52:12.906013911Z","level":"INFO","msg":"stream: closed","id":"xmo2cdic"}
