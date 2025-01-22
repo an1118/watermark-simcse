@@ -203,6 +203,21 @@ class Watermark():
             outputs = model(**input_ids, return_dict=True, sent_emb=True)
             pooler_output = outputs.pooler_output.squeeze()
         return pooler_output
+    
+    def _cosine_similarity(self, map1, map2):
+        assert len(map1) == len(map2), "Two lists must have same length"
+        dot_product = np.dot(map1, map2)
+        norm1 = np.linalg.norm(map1)
+        norm2 = np.linalg.norm(map2)
+        return dot_product / (norm1 * norm2) if norm1 != 0 and norm2 != 0 else 0.0
+
+    def _sim_after_mapping_sign(self, text1, text2):
+        map1 = self._sentiment_embed_map(text1, self.embed_map_model, self.embed_map_tokenizer, self.device).tolist()
+        map2 = self._sentiment_embed_map(text2, self.embed_map_model, self.embed_map_tokenizer, self.device).tolist()
+
+        map1 = [1.0 if x>0.0 else 0.0 for x in map1]
+        map2 = [1.0 if x>0.0 else 0.0 for x in map2]
+        return self._cosine_similarity(map1, map2)
 
     def _watermarking(self, ids, logits, secret_string, measure_threshold, mapping):
         '''

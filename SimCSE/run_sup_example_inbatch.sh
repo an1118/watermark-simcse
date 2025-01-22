@@ -72,6 +72,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --do_train \
     --do_eval \
     --fp16 \
+    --gradient_checkpointing \
     --report_to="wandb" \
     --run_name="wm-simcse-${model_name_}-c4-loss_cl${loss_function_id}_gr-wneg${neg_weight}" \
     --logging_steps=1 \
