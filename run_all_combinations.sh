@@ -3,12 +3,12 @@ set -e
 repo="/mnt/data2/lian/projects/watermark/watermark-simcse"
 
 model_name="cardiffnlp/twitter-roberta-base-sentiment"  # "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-gpu_id=4
+gpu_id=0
 dataset=c4
-batch_size=64
-train_epochs=30
+batch_size=8
+train_epochs=1
 LOSS_FUNCTION_IDS=(4)  # 2 3 4
-NEG_WEIGHTS=(1 32 64 128 256)  # 1 32 64 128
+NEG_WEIGHTS=(1)  # 1 32 64 128
 
 model_name_="${model_name#*/}"
 

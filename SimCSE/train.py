@@ -408,12 +408,6 @@ def main():
                 use_auth_token=True if model_args.use_auth_token else None,
                 model_args=model_args                  
             )
-            # if "twitter-roberta-base-sentiment" in model_args.model_name_or_path:
-            #     # Initialize MLP weights
-            #     from transformers import AutoModelForSequenceClassification
-            #     pretrained_model = AutoModelForSequenceClassification.from_pretrained(model_args.model_name_or_path)
-            #     model.initialize_mlp_weights(pretrained_model)
-            #     print('Load mlp dense weights and bias from pretrained model!')
         elif 'qwen2' in model_args.model_name_or_path.lower():
             model = Qwen2ForCL.from_pretrained(
                 model_args.model_name_or_path,

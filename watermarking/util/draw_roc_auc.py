@@ -4,25 +4,21 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import pandas as pd
 import os
 
-cl_idx = 1
-neg_weight=128
-
-result_path = f'/mnt/data2/lian/projects/watermark/adaptive-text-watermark-yepeng/outputs/end2end/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
-df = pd.read_csv(result_path)
-
-print(df.shape[0], 'rows')
-
-def calculate_roc_auc(negative_scores, positive_scores):
+def calculate_roc_auc(human_scores, watermarked_scores):
     # 创建标签，0代表人类写的，1代表机器生成的
-    labels = np.array([0] * len(negative_scores) + [1] * len(positive_scores))
+    labels = np.array([0] * len(human_scores) + [1] * len(watermarked_scores))
     # 合并所有得分
-    scores = np.array(negative_scores + positive_scores)
+    scores = np.array(human_scores + watermarked_scores)
     valid_indices = ~np.isnan(labels) & ~np.isnan(scores)
+    import pdb
+    pdb.set_trace()
+    print(len(~np.isnan(scores)) - 50, 'valid rows')
     labels = labels[valid_indices]
     scores = scores[valid_indices]
     # 计算AUC
     auc = roc_auc_score(labels, scores)
     fpr, tpr, _ = roc_curve(labels, scores)
+    print('ROC-AUC:', round(auc*100, 2))
     return auc, fpr, tpr
 
 def draw_roc(human_scores, wm_score):
@@ -45,8 +41,19 @@ def draw_roc(human_scores, wm_score):
     plt.show()
     print('ROC-AUC:', round(auc_w*100, 2))
 
-human_scores = df['human_score'].to_list()
-for type_ in ['adaptive', 'hate', 'paraphrased']:
-    print(type_, end=' ')
-    wm_scores = df[f'{type_}_watermarked_text_score'].to_list()
-    draw_roc(human_scores, wm_scores)
+
+model_name = "twitter-roberta-base-sentiment"
+print(f'=========={model_name}==========')
+for cl_idx in [2, 3, 4]:
+    for neg_weight in [1, 32, 64, 128]:
+        result_path = f'watermarking/outputs/end2end/c4/{model_name}/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
+        if os.path.exists(result_path):
+            print(f'====cl func: {cl_idx} / neg_weight: {neg_weight}====')
+            df = pd.read_csv(result_path)
+
+            human_scores = df['human_score'].to_list()
+            for type_ in ['adaptive', 'hate', 'paraphrased']:
+                print(type_, end=': ')
+                wm_scores = df[f'{type_}_watermarked_text_score'].to_list()
+                calculate_roc_auc(human_scores, wm_scores)
+                # draw_roc(human_scores, wm_scores)

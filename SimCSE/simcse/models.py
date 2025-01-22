@@ -6,8 +6,7 @@ from torch import Tensor
 
 import transformers
 from transformers import RobertaTokenizer
-from transformers.models.roberta.modeling_roberta import RobertaPreTrainedModel, RobertaModel, RobertaLMHead, RobertaForSequenceClassification
-from transformers.models.bert.modeling_bert import BertPreTrainedModel, BertModel, BertLMPredictionHead
+from transformers.models.roberta.modeling_roberta import RobertaForSequenceClassification, RobertaClassificationHead, RobertaPreTrainedModel, RobertaModel, RobertaLMHead
 from transformers.models.qwen2.modeling_qwen2 import Qwen2PreTrainedModel, Qwen2Model
 from transformers.activations import gelu
 from transformers.file_utils import (
@@ -116,18 +115,40 @@ class Pooler(nn.Module):
             raise NotImplementedError
 
 
+class RobertaClassificationHeadForEmbedding(RobertaClassificationHead):
+    """Head for sentence-level classification tasks."""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        classifier_dropout = (
+            config.classifier_dropout if config.classifier_dropout is not None else config.hidden_dropout_prob
+        )
+        self.dropout = nn.Dropout(classifier_dropout)
+        self.out_proj = nn.Linear(config.hidden_size, config.num_labels)
+
+    def forward(self, features, **kwargs):
+        x = features[:, 0, :]  # take <s> token (equiv. to [CLS])
+        x = self.dropout(x)
+        x = self.dense(x)
+        # x = torch.tanh(x)
+        # x = self.dropout(x)
+        # x = self.out_proj(x)
+        return x
+
+
 def cl_init(cls, config):
     """
     Contrastive learning class init function.
     """
-    if 'roberta' in cls.model_args.model_name_or_path:
-        cls.pooler_type = cls.model_args.pooler_type
-        cls.pooler = Pooler(cls.model_args.pooler_type)
-        if cls.model_args.pooler_type == "cls":
-            cls.mlp = MLPLayer(config)
-            if cls.model_args.freeze_embed:
-                for param in cls.mlp.parameters():
-                    param.requires_grad = False
+    # if 'roberta' in cls.model_args.model_name_or_path.lower():
+    #     cls.pooler_type = cls.model_args.pooler_type
+    #     cls.pooler = Pooler(cls.model_args.pooler_type)
+    #     if cls.model_args.pooler_type == "cls":
+    #         cls.mlp = MLPLayer(config)
+    #         if cls.model_args.freeze_embed:
+    #             for param in cls.mlp.parameters():
+    #                 param.requires_grad = False
     cls.sim = Similarity(temp=cls.model_args.temp)
     cls.init_weights()
 
@@ -178,7 +199,6 @@ def cl_forward(cls,
     # finish debug
 
     return_dict = return_dict if return_dict is not None else cls.config.use_return_dict
-    ori_input_ids = input_ids
     batch_size = input_ids.size(0)
     # Number of sentences in one instance
     # 2: pair instance; 3: pair instance with a hard negative
@@ -190,8 +210,6 @@ def cl_forward(cls,
     attention_mask = attention_mask.view((-1, attention_mask.size(-1))) # (bs * num_sent len)
     if token_type_ids is not None:
         token_type_ids = token_type_ids.view((-1, token_type_ids.size(-1))) # (bs * num_sent, len)
-
-    
     
     if 'roberta' in cls.model_args.model_name_or_path:
         # Get raw embeddings
@@ -223,13 +241,10 @@ def cl_forward(cls,
             )
 
         # Pooling
-        pooler_output = cls.pooler(attention_mask, outputs)
+        sequence_output = outputs[0]
+        pooler_output = cls.classifier(sequence_output)
         pooler_output = pooler_output.view((batch_size, num_sent, pooler_output.size(-1))) # (bs, num_sent, hidden)
 
-        # If using "cls", we add an extra MLP layer
-        # (same as BERT's original implementation) over the representation.
-        if cls.pooler_type == "cls":
-            pooler_output = cls.mlp(pooler_output)
     elif 'qwen2' in cls.model_args.model_name_or_path.lower():
         def last_token_pool(last_hidden_states: Tensor,
                         attention_mask: Tensor) -> Tensor:
@@ -519,27 +534,30 @@ def sentemb_forward(
     )
 
 
-class RobertaForCL(RobertaPreTrainedModel):
+class RobertaForCL(RobertaForSequenceClassification):
     _keys_to_ignore_on_load_missing = [r"position_ids"]
 
     def __init__(self, config, *model_args, **model_kargs):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
-        self.roberta = RobertaModel(config, add_pooling_layer=False)
-        # import pdb
-        # pdb.set_trace()
-        # self.embed = RobertaForSequenceClassification(config)
+
+        self.classifier = RobertaClassificationHeadForEmbedding(config)
 
         if self.model_args.do_mlm:
             self.lm_head = RobertaLMHead(config)
 
-        cl_init(self, config)
         self.map = SemanticModel(input_dim=768)
+        cl_init(self, config)
 
         if self.model_args.freeze_embed:
             # Freeze RoBERTa encoder parameters
             for param in self.roberta.parameters():
                 param.requires_grad = False
+            for param in self.classifier.parameters():
+                param.requires_grad = False
+        
+        # Initialize weights and apply final processing
+        self.post_init()
 
     def initialize_mlp_weights(self, pretrained_model_state_dict):
         """
