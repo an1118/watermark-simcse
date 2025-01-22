@@ -52,7 +52,7 @@ output_file="$watermark_output_dir/eda/sim_watermark-8b-loss_cl${loss_function_i
 HARD_NEGATIVE_WEIGHT=$(python3 -c "import math; print(math.log(${neg_weight}))")
 
 # watermarking
-CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/generation_1step_end2end.py \
+CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/eda_1step_end2end.py \
     --embed_map_model=$embed_map_model \
     --hard_negative_weight=$HARD_NEGATIVE_WEIGHT \
     --num_of_sent=${num_of_sent} \
