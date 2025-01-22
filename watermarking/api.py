@@ -4,7 +4,7 @@ from openai import OpenAI, AzureOpenAI
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=30))
 def call_chatgpt_api(messages, max_tokens, seed=None, model='GPT4', port=8000):
     api_infos = {
-        'GPT-4o': {'api_version': "2024-08-01-preview", 'azure_endpoint': "https://gpt4-o-250120-temp.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview", 'api_key': '', 'model': 'gpt-4o'},        
+        'GPT-4o': {'api_version': "2024-08-01-preview", 'azure_endpoint': "https://gpt4o-bairu-250121.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview", 'api_key': '', 'model': 'gpt-4o'},        
     }
     if model == 'llama':
         openai_api_key = "EMPTY"
@@ -38,6 +38,4 @@ def call_chatgpt_api(messages, max_tokens, seed=None, model='GPT4', port=8000):
 
 # # Make the API call
 # response = call_chatgpt_api(messages, max_tokens, model='GPT-4o')
-# import pdb
-# pdb.set_trace()
-# # print(response)
+# print(response)

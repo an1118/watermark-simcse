@@ -14,13 +14,13 @@ model_name_="${model_name#*/}"
 
 for loss_function_id in "${LOSS_FUNCTION_IDS[@]}"; do
   for neg_weight in "${NEG_WEIGHTS[@]}"; do
-    bash SimCSE/run_sup_example_inbatch.sh \
-      --gpu_id $gpu_id \
-      --batch_size $batch_size \
-      --train_epochs $train_epochs \
-      --loss_function_id $loss_function_id \
-      --neg_weight $neg_weight \
-      --model_name $model_name
+    # bash SimCSE/run_sup_example_inbatch.sh \
+    #   --gpu_id $gpu_id \
+    #   --batch_size $batch_size \
+    #   --train_epochs $train_epochs \
+    #   --loss_function_id $loss_function_id \
+    #   --neg_weight $neg_weight \
+    #   --model_name $model_name
     
     watermark_output_dir="$repo/watermarking/outputs/end2end/$dataset/${model_name_}"
     embed_map_model="$repo/SimCSE/result/${model_name_}/end2end-c4-loss_cl${loss_function_id}_gr-wneg${neg_weight}"

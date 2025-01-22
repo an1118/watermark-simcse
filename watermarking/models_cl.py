@@ -482,13 +482,11 @@ def sentemb_forward(
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
-            output_hidden_states=True if cls.pooler_type in ['avg_top2', 'avg_first_last'] else False,
+            output_hidden_states=False,
             return_dict=True,
         )
-
-        pooler_output = cls.pooler(attention_mask, outputs)
-        if cls.pooler_type == "cls" and not cls.model_args.mlp_only_train:
-            pooler_output = cls.mlp(pooler_output)
+        sequence_output = outputs[0]
+        pooler_output = cls.classifier(sequence_output)
     elif 'qwen2' in cls.model_args.model_name_or_path.lower():
         def last_token_pool(last_hidden_states: Tensor,
                         attention_mask: Tensor) -> Tensor:
