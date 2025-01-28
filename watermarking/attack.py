@@ -50,7 +50,8 @@ def shuffle_attack(text):
                 return None
 
 def paraphrase_attack(text):
-    prompt = 'You are an expert copy-editor. Please rewrite the following text in your own voice and paraphrase all sentences. \n Ensure that the final output contains the same information as the original text and has roughly the same length. \n Do not leave out any important details when rewriting in your own voice. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'
+    # prompt = 'You are an expert copy-editor. Please rewrite the following text in your own voice and paraphrase all sentences. \n Ensure that the final output contains the same information as the original text and has roughly the same length. \n Do not leave out any important details when rewriting in your own voice. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'
+    prompt = '''Rewrite the following text by changing the wording but keeping all the facts exactly the same. The new version should match the original sentiment very closely, not just in positivity or negativity but also in the nuanced expression of emotions. Aim to minimize any changes that could alter the text's subtle tone, and ensure the paraphrased version is close in meaning to the original. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'''
 
     messages = [
         {
@@ -88,6 +89,8 @@ def hate_attack(text):
     prompt = f"Please take the following neutral text and modify it to reflect a more negative or aggressive tone while making the fewest changes possible. Aim to maintain the original structure and content as much as you can, but shift the implications to convey a more hostile attitude. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly."
     # prompt = '''Please modify the following text to reflect a more negative or aggressive tone. \nRequirements: \n- Add negative or aggressive words accounting for around 10% of the total text;\n- Maintain the original structure as closely as possible;\n- Shift the underlying implications to convey a more hostile attitude.'''
     # prompt = f"Make no more than 5 word-level changes to the text to change its sentiment. Here is the original text:\n{text}\nRevised version:"
+    num_words = len(text.strip().split(' '))
+    prompt = f'''Please modify the following text to reflect a more negative or aggressive tone. \nRequirements: \n- Add around {num_words // 10} negative or aggressive words;\n- Maintain the original structure as closely as possible;\n- Shift the underlying implications to convey a more hostile attitude. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'''
     messages = [
         {
             "role": "system", "content": prompt,

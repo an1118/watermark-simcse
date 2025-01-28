@@ -98,24 +98,20 @@ def main(args):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         df = pd.read_csv(args.result_file)
-        df['sim_ori_wm'] = ''
-        df['sim_ori_para'] = ''
-        df['sim_wm_para'] = ''
+        df['sim_ori_pass1'], df['sim_ori_pass2'] = '', ''
 
     watermark_rate = []  # debug
     distance_type = 'l2'
     for i in tqdm(range(finished, len(df))):
-        original_text = df.loc[i, 'original_text']
-        adaptive_watermarked_text = df.loc[i, 'adaptive_watermarked_text']
-        paraphrased_watermarked_text = df.loc[i, 'paraphrased_watermarked_text']
+        original_text = df.loc[i, 'original']
+        pass1_text = df.loc[i, 'pass1_paraphrase']
+        pass2_text = df.loc[i, 'pass2_paraphrase']
 
-        sim_ori_wm = watermark._sim_after_mapping_sign(original_text, adaptive_watermarked_text, distance_type) if not pd.isna(original_text) and not pd.isna(adaptive_watermarked_text) else ''
-        sim_ori_para = watermark._sim_after_mapping_sign(original_text, paraphrased_watermarked_text, distance_type) if not pd.isna(original_text) and not pd.isna(paraphrased_watermarked_text) else ''
-        sim_wm_para = watermark._sim_after_mapping_sign(adaptive_watermarked_text, paraphrased_watermarked_text, distance_type) if not pd.isna(adaptive_watermarked_text) and not pd.isna(paraphrased_watermarked_text) else ''
+        sim_ori_pass1 = watermark._sim_after_mapping_sign(original_text, pass1_text, distance_type) if not pd.isna(original_text) and not pd.isna(pass1_text) else ''
+        sim_ori_pass2 = watermark._sim_after_mapping_sign(original_text, pass2_text, distance_type) if not pd.isna(original_text) and not pd.isna(pass2_text) else ''
 
-        df.loc[i, 'sim_ori_wm'] = sim_ori_wm
-        df.loc[i, 'sim_ori_para'] = sim_ori_para
-        df.loc[i, 'sim_wm_para'] = sim_wm_para
+        df.loc[i, 'sim_ori_pass1'] = sim_ori_pass1
+        df.loc[i, 'sim_ori_pass2'] = sim_ori_pass2
 
         df.to_csv(f'{args.output_file}', index=False)
 

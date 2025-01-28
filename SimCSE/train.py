@@ -138,6 +138,18 @@ class ModelArguments:
             "help": "The index of the loss function."
         }
     )
+    num_paraphrased: int = field(
+        default = None,
+        metadata={
+            "help": "Number of paraphrased examples."
+        }
+    )
+    num_negative: int = field(
+        default = None,
+        metadata={
+            "help": "Number of negative examples."
+        }
+    )
     
 
 
@@ -429,28 +441,18 @@ def main():
 
     # Prepare features
     column_names = datasets["train"].column_names
-    sent2_cname, sent3_cname = None, None
-    if len(column_names) == 2:
-        # Pair datasets
-        sent0_cname = column_names[0]
-        sent1_cname = column_names[1]
-    elif len(column_names) == 3:
-        # Pair datasets with hard negatives
-        sent0_cname = column_names[0]
-        sent1_cname = column_names[1]
-        sent2_cname = column_names[2]
-    elif len(column_names) == 4:
-        # Pair datasets with two hard negatives
-        sent0_cname = column_names[0]
-        sent1_cname = column_names[1]
-        sent2_cname = column_names[2]
-        sent3_cname = column_names[3]
-    elif len(column_names) == 1:
-        # Unsupervised datasets
-        sent0_cname = column_names[0]
-        sent1_cname = column_names[0]
-    else:
-        raise NotImplementedError
+    original_cname = 'original'
+    paraphrase_cnames = [cname for cname in column_names if cname.startswith('unchanged')]
+    negative_cnames = [cname for cname in column_names if cname.startswith('negative')] # + [cname for cname in column_names if cname.startswith('positive')]
+
+    num_paraphrased = model_args.num_paraphrased
+    num_negative = model_args.num_negative
+    assert num_paraphrased <= len(paraphrase_cnames), f"Number of paraphrased examples ({num_paraphrased}) exceeds the max number of paraphrases ({len(paraphrase_cnames)})."
+    assert num_negative <= len(negative_cnames), f"Number of negative examples ({num_negative}) exceeds the max number of negatives ({len(negative_cnames)})."
+    
+    paraphrase_cnames = paraphrase_cnames[:num_paraphrased]
+    negative_cnames = negative_cnames[:num_negative]
+    print(f"Contrastive learning with {num_paraphrased} paraphrased and {num_negative} negative examples.")
 
     def prepare_features(examples):
         # padding = longest (default)
@@ -460,26 +462,18 @@ def main():
         #   exceed the max length.
         # padding = max_length (when pad_to_max_length, for pressure test)
         #   All sentences are padded/truncated to data_args.max_seq_length.
-        total = len(examples[sent0_cname])
+        total = len(examples[original_cname])
 
         # Avoid "None" fields 
         for idx in range(total):
-            if examples[sent0_cname][idx] is None:
-                examples[sent0_cname][idx] = " "
-            if examples[sent1_cname][idx] is None:
-                examples[sent1_cname][idx] = " "
+            for cname in ['original'] + paraphrase_cnames + negative_cnames:
+                if examples[cname][idx] is None:
+                    examples[cname][idx] = " "
         
-        sentences = examples[sent0_cname] + examples[sent1_cname]
-
-        # If hard negative exists
-        for neg in [sent2_cname, sent3_cname]:
-            if neg is not None:
-                for idx in range(total):
-                    if examples[neg][idx] is None:
-                        examples[neg][idx] = " "
-                sentences += examples[neg]
-
-        # TODO: support two hard negatives, modify code afterwards
+        sentences = examples[original_cname]
+        for cname in paraphrase_cnames + negative_cnames:
+            sentences += examples[cname]
+        
         sent_features = tokenizer(
             sentences,
             max_length=data_args.max_seq_length,
@@ -488,12 +482,11 @@ def main():
         )
 
         features = {}
-        if sent2_cname is not None:
-            for key in sent_features:
-                features[key] = [[sent_features[key][i], sent_features[key][i+total], sent_features[key][i+total*2]] for i in range(total)]
-        else:
-            for key in sent_features:
-                features[key] = [[sent_features[key][i], sent_features[key][i+total]] for i in range(total)]
+        for key in sent_features:
+            features[key] = [[sent_features[key][i]] \
+                              + [sent_features[key][i + total * (j+1)] for j in range(num_paraphrased)] \
+                              + [sent_features[key][i + total * (j+1)] for j in range(num_paraphrased, num_paraphrased + num_negative)] \
+                              for i in range(total)]
             
         return features
 
