@@ -167,7 +167,6 @@ def cl_forward(cls,
     num_sent = input_ids.size(1)
 
     mlm_outputs = None
-    import pdb; pdb.set_trace()
     # Flatten input for encoding
     input_ids = input_ids.view((-1, input_ids.size(-1))) # (bs * num_sent, len)
     attention_mask = attention_mask.view((-1, attention_mask.size(-1))) # (bs * num_sent len)

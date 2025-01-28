@@ -39,10 +39,11 @@ def draw_roc(human_scores, wm_score):
     print('ROC-AUC:', round(auc_w*100, 2))
 
 model_name = 'twitter-roberta-base-sentiment'  # 'gte-Qwen2-1.5B-instruct'
+generation_model = "GPT-4o"  # 'llamadata'
 for cl_idx in [2]:
     for neg_weight in [1]:
         print(f'========cl{cl_idx} neg weigh{neg_weight}========')
-        result_path = f'/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/twitter-roberta-base-sentiment/128batch_2000epochs/sanity-check/llamadata/8paras-1negs/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
+        result_path = f'/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/{model_name}/128batch_2000epochs/sanity-check/{generation_model}/8paras-1negs/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
         df = pd.read_csv(result_path)
 
         human_scores = df['human_score'].to_list()

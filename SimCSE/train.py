@@ -444,7 +444,7 @@ def main():
     original_cname = 'original'
     paraphrase_cnames = [cname for cname in column_names if cname.startswith('unchanged')]
     negative_cnames = [cname for cname in column_names if cname.startswith('negative')] # + [cname for cname in column_names if cname.startswith('positive')]
-
+    import pdb; pdb.set_trace()
     num_paraphrased = model_args.num_paraphrased
     num_negative = model_args.num_negative
     assert num_paraphrased <= len(paraphrase_cnames), f"Number of paraphrased examples ({num_paraphrased}) exceeds the max number of paraphrases ({len(paraphrase_cnames)})."
