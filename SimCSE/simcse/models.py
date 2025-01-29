@@ -147,6 +147,21 @@ def cl_forward(cls,
     # original + cls.model_args.num_paraphrased + cls.model_args.num_negative
     num_sent = input_ids.size(1)
 
+    # input_ids: (bs, num_sent, len)
+    # random downsample one paraphrased sentence from sentences index in [1, cls.model_args.num_paraphrased-1]
+
+    # randomly generate one index from [1, cls.model_args.num_paraphrased-1]
+    # exclude tensor [:, index, :] from input_ids
+    paraphrased_idx = torch.randint(1, cls.model_args.num_paraphrased, (batch_size,))
+    mask = torch.ones_like(input_ids, dtype=torch.bool)
+    for i in range(batch_size):
+        mask[i, paraphrased_idx[i], :] = False
+    input_ids = input_ids[mask].view(batch_size, num_sent - 1, -1)
+    attention_mask = attention_mask[mask].view(batch_size, num_sent - 1, -1)
+    cls.model_args.num_paraphrased -= 1
+    if token_type_ids is not None:
+        token_type_ids = token_type_ids[mask].view(batch_size, num_sent - 1, -1)
+
     mlm_outputs = None
     # Flatten input for encoding
     input_ids = input_ids.view((-1, input_ids.size(-1))) # (bs * num_sent, len)
