@@ -84,7 +84,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --save_strategy steps \
     --save_steps 5 \
     --save_total_limit 2 \
-    --pooler_type cls \
+    --pooler_type query \
     --overwrite_output_dir \
     --temp 0.05 \
     --do_train \

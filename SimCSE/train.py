@@ -97,9 +97,9 @@ class ModelArguments:
         }
     )
     pooler_type: str = field(
-        default="cls",
+        default="last",
         metadata={
-            "help": "What kind of pooler to use (cls, cls_before_pooler, avg, avg_top2, avg_first_last)."
+            "help": "What kind of pooler to use (last, query)."
         }
     ) 
     hard_negative_weight: float = field(
@@ -444,7 +444,7 @@ def main():
     original_cname = 'original'
     paraphrase_cnames = [cname for cname in column_names if cname.startswith('unchanged')]
     negative_cnames = [cname for cname in column_names if cname.startswith('negative')] # + [cname for cname in column_names if cname.startswith('positive')]
-    import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()  # check features
     num_paraphrased = model_args.num_paraphrased
     num_negative = model_args.num_negative
     assert num_paraphrased <= len(paraphrase_cnames), f"Number of paraphrased examples ({num_paraphrased}) exceeds the max number of paraphrases ({len(paraphrase_cnames)})."
@@ -452,7 +452,7 @@ def main():
     
     paraphrase_cnames = paraphrase_cnames[:num_paraphrased]
     negative_cnames = negative_cnames[:num_negative]
-    print(f"Contrastive learning with {num_paraphrased} paraphrased and {num_negative} negative examples.")
+    print(f"======Contrastive learning with {num_paraphrased} paraphrased and {num_negative} negative examples.======")
 
     def prepare_features(examples):
         # padding = longest (default)

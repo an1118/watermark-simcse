@@ -78,43 +78,6 @@ class Similarity(nn.Module):
         return self.cos(x, y) / self.temp
 
 
-class Pooler(nn.Module):
-    """
-    Parameter-free poolers to get the sentence embedding
-    'cls': [CLS] representation with BERT/RoBERTa's MLP pooler.
-    'cls_before_pooler': [CLS] representation without the original MLP pooler.
-    'avg': average of the last layers' hidden states at each token.
-    'avg_top2': average of the last two layers.
-    'avg_first_last': average of the first and the last layers.
-    """
-    def __init__(self, pooler_type):
-        super().__init__()
-        self.pooler_type = pooler_type
-        assert self.pooler_type in ["cls", "cls_before_pooler", "avg", "avg_top2", "avg_first_last"], "unrecognized pooling type %s" % self.pooler_type
-
-    def forward(self, attention_mask, outputs):
-        last_hidden = outputs.last_hidden_state
-        pooler_output = outputs.pooler_output
-        hidden_states = outputs.hidden_states
-
-        if self.pooler_type in ['cls_before_pooler', 'cls']:
-            return last_hidden[:, 0]
-        elif self.pooler_type == "avg":
-            return ((last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1))
-        elif self.pooler_type == "avg_first_last":
-            first_hidden = hidden_states[1]
-            last_hidden = hidden_states[-1]
-            pooled_result = ((first_hidden + last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
-            return pooled_result
-        elif self.pooler_type == "avg_top2":
-            second_last_hidden = hidden_states[-2]
-            last_hidden = hidden_states[-1]
-            pooled_result = ((last_hidden + second_last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
-            return pooled_result
-        else:
-            raise NotImplementedError
-
-
 class RobertaClassificationHeadForEmbedding(RobertaClassificationHead):
     """Head for sentence-level classification tasks."""
 
@@ -135,6 +98,24 @@ class RobertaClassificationHeadForEmbedding(RobertaClassificationHead):
         # x = self.dropout(x)
         # x = self.out_proj(x)
         return x
+
+class QueryHead(nn.Module):
+    def __init__(self, hidden_size):
+        super(QueryHead, self).__init__()
+        # Learnable query vector
+        self.query = nn.Parameter(torch.randn(hidden_size))
+    
+    def forward(self, hidden_states):
+        """
+        hidden_states: Tensor of shape (batch_size, seq_length, hidden_size)
+        """
+        # Compute attention scores
+        attention_scores = torch.softmax(torch.matmul(hidden_states, self.query), dim=1)  # (batch_size, seq_length)
+
+        # Aggregate hidden states
+        sequence_embedding = torch.matmul(attention_scores.unsqueeze(1), hidden_states).squeeze(1)  # (batch_size, hidden_size)
+        
+        return sequence_embedding
 
 
 def cl_init(cls, config):
@@ -230,7 +211,12 @@ def cl_forward(cls,
             return_dict=True,
         )
 
-        pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+        if cls.model_args.pooler_type == 'query':
+            pooler_output = cls.query(outputs.last_hidden_state)
+        elif cls.model_args.pooler_type == 'last':
+            pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+        else:
+            raise NotImplementedError
         # normalize embeddings
         pooler_output = F.normalize(pooler_output, p=2, dim=1)
         
@@ -560,6 +546,8 @@ class Qwen2ForCL(Qwen2PreTrainedModel):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
         self.model = Qwen2Model(config)
+
+        self.query = QueryHead(config.hidden_size)
 
         # if self.model_args.do_mlm:
         #     self.lm_head = RobertaLMHead(config)

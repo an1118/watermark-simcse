@@ -2,16 +2,16 @@
 set -e
 repo="/mnt/data2/lian/projects/watermark/watermark-simcse"
 
-model_name="cardiffnlp/twitter-roberta-base-sentiment"  # "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-gpu_id=5
+model_name="Alibaba-NLP/gte-Qwen2-1.5B-instruct"  # "cardiffnlp/twitter-roberta-base-sentiment"
+gpu_id=6
 dataset=c4
-batch_size=64
-train_epochs=2000
+batch_size=32
+train_epochs=1000
 LOSS_FUNCTION_IDS=(2)  # 2 3 4
 NEG_WEIGHTS=(1)  # 1 32 64 128
-num_paraphrased=17
+num_paraphrased=8
 num_negative=1
-data_generation_model="mix_wm_GPT-4o_Llama-3.1-8B-Instruct"
+data_generation_model="Llama-3.1-8B-Instruct"
 data_path="/mnt/data2/lian/projects/watermark/data/${data_generation_model}/onebatch-c4-train-simcse-all-filtered-formatted.csv"
 
 model_name_="${model_name#*/}"
