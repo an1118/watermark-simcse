@@ -159,6 +159,7 @@ def cl_forward(cls,
     input_ids = input_ids[mask].view(batch_size, num_sent - 1, -1)
     attention_mask = attention_mask[mask].view(batch_size, num_sent - 1, -1)
     num_paraphrased = cls.model_args.num_paraphrased - 1
+    num_sent -= 1
     if token_type_ids is not None:
         token_type_ids = token_type_ids[mask].view(batch_size, num_sent - 1, -1)
 
