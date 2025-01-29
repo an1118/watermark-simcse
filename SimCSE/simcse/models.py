@@ -158,7 +158,7 @@ def cl_forward(cls,
         mask[i, paraphrased_idx[i], :] = False
     input_ids = input_ids[mask].view(batch_size, num_sent - 1, -1)
     attention_mask = attention_mask[mask].view(batch_size, num_sent - 1, -1)
-    cls.model_args.num_paraphrased -= 1
+    num_paraphrased = cls.model_args.num_paraphrased - 1
     if token_type_ids is not None:
         token_type_ids = token_type_ids[mask].view(batch_size, num_sent - 1, -1)
 
@@ -250,8 +250,8 @@ def cl_forward(cls,
         
     # Separate representation
     z1 = pooler_output[:, 0]
-    z2_list = [pooler_output[:, i] for i in range(1, cls.model_args.num_paraphrased + 1)]
-    z3_list = [pooler_output[:, i] for i in range(cls.model_args.num_paraphrased + 1, cls.model_args.num_paraphrased + cls.model_args.num_negative + 1)]
+    z2_list = [pooler_output[:, i] for i in range(1, num_paraphrased + 1)]
+    z3_list = [pooler_output[:, i] for i in range(num_paraphrased + 1, num_paraphrased + cls.model_args.num_negative + 1)]
 
     # Gather all embeddings if using distributed training
     if dist.is_initialized() and cls.training:
@@ -319,7 +319,7 @@ def cl_forward(cls,
             cos_sim = cos_sim + weights
             labels = torch.zeros(cos_sim.size(0)).long().to(cls.device)
             loss_1 += loss_fct(cos_sim, labels)
-        loss_1 /= cls.model_args.num_paraphrased
+        loss_1 /= num_paraphrased
     elif cls.model_args.loss_function_id == 3:
         raise NotImplementedError
         # z1_z1_cos = cls.sim(z1.unsqueeze(1), z1.unsqueeze(0))  # (bs, bs)
