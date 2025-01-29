@@ -3,6 +3,7 @@ set -e
 repo="/mnt/data2/lian/projects/watermark/watermark-simcse"
 
 model_name="Alibaba-NLP/gte-Qwen2-1.5B-instruct"  # "cardiffnlp/twitter-roberta-base-sentiment"
+pooler_type="last"
 gpu_id=6
 dataset=c4
 batch_size=32
@@ -28,7 +29,8 @@ for loss_function_id in "${LOSS_FUNCTION_IDS[@]}"; do
       --neg_weight $neg_weight \
       --model_name $model_name \
       --train_file $data_path \
-      --data_generation_model $data_generation_model
+      --data_generation_model $data_generation_model \
+      --pooler_type $pooler_type
     
     embed_map_model="$repo/SimCSE/result/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/${data_generation_model}/end2end-c4-loss_cl${loss_function_id}-wneg${neg_weight}-${num_paraphrased}paras-${num_negative}negs"
     watermark_output_dir="$repo/watermarking/outputs/end2end/$dataset/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/${data_generation_model}/${num_paraphrased}paras-${num_negative}negs"

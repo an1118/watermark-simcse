@@ -53,6 +53,11 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    --pooler_type)
+      pooler_type="$2"
+      shift
+      shift
+      ;;
     *)
       shift
       ;;
@@ -84,7 +89,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --save_strategy steps \
     --save_steps 5 \
     --save_total_limit 2 \
-    --pooler_type query \
+    --pooler_type ${pooler_type} \
     --overwrite_output_dir \
     --temp 0.05 \
     --do_train \
