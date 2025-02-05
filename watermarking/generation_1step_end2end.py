@@ -84,7 +84,7 @@ def main(args):
     if 'onebatch' in data_path.lower():
         dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=128, num_of_sent=args.num_of_sent)
     elif 'c4' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
+        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
     elif 'lfqa' in data_path.lower():
         dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100)
 

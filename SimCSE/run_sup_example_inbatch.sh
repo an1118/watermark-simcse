@@ -63,6 +63,11 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    --valid_file)
+      valid_file="$2"
+      shift
+      shift
+      ;;
     --pooler_type)
       pooler_type="$2"
       shift
@@ -102,6 +107,7 @@ echo "negative weight: $neg_weight"
 CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --config_file SimCSE/simcse_config.yaml SimCSE/train.py \
     --model_name_or_path ${model_name} \
     --train_file ${train_file} \
+    --validation_file ${valid_file} \
     --output_dir ${output_dir} \
     --hard_negative_weight $HARD_NEGATIVE_WEIGHT \
     --loss_function_id  ${loss_function_id} \
@@ -111,26 +117,24 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --num_negative_gpt $num_negative_gpt \
     --num_train_epochs $train_epochs \
     --per_device_train_batch_size $batch_size \
+    --per_device_eval_batch_size $batch_size \
     --learning_rate 3e-5 \
     --max_seq_length 320 \
     --freeze_base $freeze_base \
-    --save_strategy steps \
-    --save_steps 5 \
+    --evaluation_strategy steps \
+    --save_strategy best \
     --save_total_limit 1 \
+    --load_best_model_at_end \
+    --metric_for_best_model loss \
+    --eval_steps 5 \
     --pooler_type ${pooler_type} \
     --overwrite_output_dir \
     --temp 0.05 \
     --do_train \
+    --do_eval \
     --fp16 \
     --gradient_checkpointing \
     --report_to="wandb" \
-    --run_name="sc-${model_name_}-c4-loss_cl${loss_function_id}-wneg${neg_weight}-batch${batch_size}-llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}" \
+    --run_name="${model_name_}-loss_cl${loss_function_id}-wneg${neg_weight}-batch${batch_size}-llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}" \
     --logging_steps=1 \
     "$@"
-    # --validation_file SimCSE/data/c4-test-simcse-all-filtered-formatted.csv \
-    # --per_device_eval_batch_size $batch_size \
-    # --do_eval \
-    # --evaluation_strategy steps \
-    # --metric_for_best_model loss \
-    # --load_best_model_at_end \
-    # --eval_steps 5 \

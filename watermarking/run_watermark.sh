@@ -37,8 +37,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-dataset=c4
-
 num_of_sent=10
 alpha=2.0
 # beta=0.0
@@ -51,8 +49,7 @@ cp SimCSE/simcse/models.py watermarking/models_cl.py
 
 watermark_output_file="$watermark_output_dir/watermark-8b-loss_cl${loss_function_id}_gr_wneg${neg_weight}-${num_of_sent}sent-alpha${alpha}-delta${delta_0}|${delta}.csv"  # for c4
 # eda_output_file="$watermark_output_dir/watermark-8b-loss_cl${loss_function_id}_gr_wneg${neg_weight}-${num_of_sent}sent-alpha${alpha}-delta${delta_0}|${delta}-sim.csv"  # for c4
-eda_output_file="$watermark_output_dir/multiple-spoofing-attack.csv"  # for c4
-# watermark_output_file="outputs/${method}/${dataset}/watermark-8b-mm|${measure_model:0:4}-alpha${alpha}-beta${beta}-delta${delta_0}|${delta}.csv"  # for lfqa
+eda_output_file="$watermark_output_dir/multiple-spoofing-attack.csv"
 
 HARD_NEGATIVE_WEIGHT=$(python3 -c "import math; print(math.log(${neg_weight}))")
 
