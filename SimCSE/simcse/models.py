@@ -99,25 +99,70 @@ class RobertaClassificationHeadForEmbedding(RobertaClassificationHead):
         # x = self.out_proj(x)
         return x
 
+
 class QueryHead(nn.Module):
     def __init__(self, hidden_size):
         super(QueryHead, self).__init__()
         # Learnable query vector
         self.query = nn.Parameter(torch.randn(hidden_size))
-    
-    def forward(self, hidden_states):
+
+    def forward(self, hidden_states, attention_mask=None):
         """
-        hidden_states: Tensor of shape (batch_size, seq_length, hidden_size)
+        Args:
+            hidden_states: Tensor of shape (batch_size, seq_length, hidden_size)
+            attention_mask: Tensor of shape (batch_size, seq_length) with 1 for real tokens and 0 for padding tokens.
+        Returns:
+            sequence_embedding: Tensor of shape (batch_size, hidden_size)
         """
-        # Compute attention scores
-        attention_scores = torch.softmax(torch.matmul(hidden_states, self.query), dim=1)  # (batch_size, seq_length)
+        # Compute raw attention scores
+        attention_scores = torch.matmul(hidden_states, self.query)  # (batch_size, seq_length)
+
+        # Apply attention mask (set padding positions to large negative value before softmax)
+        if attention_mask is not None:
+            attention_scores = attention_scores.masked_fill(attention_mask == 0, -1e4)
+
+        # Normalize attention scores
+        attention_weights = F.softmax(attention_scores, dim=1)  # (batch_size, seq_length)
 
         # Aggregate hidden states
-        sequence_embedding = torch.matmul(attention_scores.unsqueeze(1), hidden_states).squeeze(1)  # (batch_size, hidden_size)
-        
+        sequence_embedding = torch.matmul(attention_weights.unsqueeze(1), hidden_states).squeeze(1)  # (batch_size, hidden_size)
+
         return sequence_embedding
+    
 
+class AttentionPooling(nn.Module):
+    def __init__(self, hidden_dim):
+        super().__init__()
+        self.key_proj = nn.Linear(hidden_dim, hidden_dim, bias=False)  # Key matrix W_K
+        self.value_proj = nn.Linear(hidden_dim, hidden_dim, bias=False)  # Value matrix W_V
+        self.query = nn.Parameter(torch.randn(hidden_dim))  # Learnable query vector
 
+    def forward(self, x, attention_mask=None):
+        """
+        Args:
+            x: Tensor of shape (B, L, H), the last hidden layer output.
+            attention_mask: Tensor of shape (B, L) with 1 for real tokens and 0 for padding tokens.
+        Returns:
+            pooled_output: Tensor of shape (B, H), the pooled sequence embedding.
+        """
+        K = self.key_proj(x)  # (B, L, H)
+        V = self.value_proj(x)  # (B, L, H)
+
+        # Compute attention scores
+        attn_scores = torch.matmul(K, self.query) / (K.shape[-1] ** 0.5)  # (B, L)
+
+        # Apply attention mask (set padding tokens to large negative value)
+        if attention_mask is not None:
+            attn_scores = attn_scores.masked_fill(attention_mask == 0, -1e4)
+
+        attn_weights = F.softmax(attn_scores, dim=1)  # (B, L)
+
+        # Weighted sum of values
+        pooled_output = torch.matmul(attn_weights.unsqueeze(1), V).squeeze(1)  # (B, H)
+        # pooled_output = torch.sum(attn_weights.unsqueeze(-1) * V, dim=1)  # (B, H)
+
+        return pooled_output
+    
 def cl_init(cls, config):
     """
     Contrastive learning class init function.
@@ -147,21 +192,20 @@ def cl_forward(cls,
     # original + cls.model_args.num_paraphrased + cls.model_args.num_negative
     num_sent = input_ids.size(1)
 
-    # input_ids: (bs, num_sent, len)
-    # random downsample one paraphrased sentence from sentences index in [1, cls.model_args.num_paraphrased-1]
-
-    # randomly generate one index from [1, cls.model_args.num_paraphrased-1]
-    # exclude tensor [:, index, :] from input_ids
-    paraphrased_idx = torch.randint(1, cls.model_args.num_paraphrased, (batch_size,))
-    mask = torch.ones_like(input_ids, dtype=torch.bool)
-    for i in range(batch_size):
-        mask[i, paraphrased_idx[i], :] = False
-    input_ids = input_ids[mask].view(batch_size, num_sent - 1, -1)
-    attention_mask = attention_mask[mask].view(batch_size, num_sent - 1, -1)
-    num_paraphrased = cls.model_args.num_paraphrased - 1
-    num_sent -= 1
-    if token_type_ids is not None:
-        token_type_ids = token_type_ids[mask].view(batch_size, num_sent - 1, -1)
+    # # input_ids: (bs, num_sent, len)
+    # # random downsample one paraphrased sentence from sentences index in [1, cls.model_args.num_paraphrased-1]
+    # # randomly generate one index from [1, cls.model_args.num_paraphrased-1]
+    # # exclude tensor [:, index, :] from input_ids
+    # paraphrased_idx = torch.randint(1, cls.model_args.num_paraphrased, (batch_size,))
+    # mask = torch.ones_like(input_ids, dtype=torch.bool)
+    # for i in range(batch_size):
+    #     mask[i, paraphrased_idx[i], :] = False
+    # input_ids = input_ids[mask].view(batch_size, num_sent - 1, -1)
+    # attention_mask = attention_mask[mask].view(batch_size, num_sent - 1, -1)
+    # num_paraphrased = cls.model_args.num_paraphrased - 1
+    # num_sent -= 1
+    # if token_type_ids is not None:
+    #     token_type_ids = token_type_ids[mask].view(batch_size, num_sent - 1, -1)
 
     mlm_outputs = None
     # Flatten input for encoding
@@ -227,8 +271,8 @@ def cl_forward(cls,
             return_dict=True,
         )
 
-        if cls.model_args.pooler_type == 'query':
-            pooler_output = cls.query(outputs.last_hidden_state)
+        if cls.model_args.pooler_type in ['query', 'attention']:
+            pooler_output = cls.pool(outputs.last_hidden_state, attention_mask)
         elif cls.model_args.pooler_type == 'last':
             pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
         else:
@@ -236,10 +280,6 @@ def cl_forward(cls,
         # normalize embeddings
         pooler_output = F.normalize(pooler_output, p=2, dim=1)
         
-        # last_unmasked_token_idx = (attention_mask == 1).long().sum(dim=1) - 1
-        # # last_unmasked_token_idx = last_unmasked_token_idx.tolist()
-        # last_hidden_state = outputs['last_hidden_state']  # (bs*num_sent, seq_len, hidden_states)
-        # pooler_output = last_hidden_state[torch.arange(last_hidden_state.size(0)), last_unmasked_token_idx] # last unmasked token's hiddent state
         pooler_output = pooler_output.view((batch_size, num_sent, pooler_output.size(-1)))  # (bs, num_sent, hidden_states)
     else:
         raise NotImplementedError
@@ -251,8 +291,8 @@ def cl_forward(cls,
         
     # Separate representation
     z1 = pooler_output[:, 0]
-    z2_list = [pooler_output[:, i] for i in range(1, num_paraphrased + 1)]
-    z3_list = [pooler_output[:, i] for i in range(num_paraphrased + 1, num_paraphrased + cls.model_args.num_negative + 1)]
+    z2_list = [pooler_output[:, i] for i in range(1, cls.model_args.num_paraphrased + 1)]
+    z3_list = [pooler_output[:, i] for i in range(cls.model_args.num_paraphrased + 1, cls.model_args.num_paraphrased + cls.model_args.num_negative + 1)]
 
     # Gather all embeddings if using distributed training
     if dist.is_initialized() and cls.training:
@@ -320,7 +360,7 @@ def cl_forward(cls,
             cos_sim = cos_sim + weights
             labels = torch.zeros(cos_sim.size(0)).long().to(cls.device)
             loss_1 += loss_fct(cos_sim, labels)
-        loss_1 /= num_paraphrased
+        loss_1 /= cls.model_args.num_paraphrased
     elif cls.model_args.loss_function_id == 3:
         raise NotImplementedError
         # z1_z1_cos = cls.sim(z1.unsqueeze(1), z1.unsqueeze(0))  # (bs, bs)
@@ -456,7 +496,13 @@ def sentemb_forward(
             output_hidden_states=True,
             return_dict=True,
         )
-        pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+
+        if cls.model_args.pooler_type in ['query', 'attention']:
+            pooler_output = cls.pool(outputs.last_hidden_state, attention_mask)
+        elif cls.model_args.pooler_type == 'last':
+            pooler_output = last_token_pool(outputs.last_hidden_state, attention_mask)
+        else:
+            raise NotImplementedError
         # normalize embeddings
         pooler_output = F.normalize(pooler_output, p=2, dim=1)
     else:
@@ -465,7 +511,6 @@ def sentemb_forward(
 
     # Mapping
     mapping_output = cls.map(pooler_output)
-    # mapping_output = torch.tanh(mapping_output * 1000)  # approximate sign function  # todo: delete
     pooler_output = mapping_output
         
 
@@ -494,7 +539,7 @@ class RobertaForCL(RobertaForSequenceClassification):
         self.map = SemanticModel(input_dim=768)
         cl_init(self, config)
 
-        if self.model_args.freeze_embed:
+        if self.model_args.freeze_base:
             # Freeze RoBERTa encoder parameters
             for param in self.roberta.parameters():
                 param.requires_grad = False
@@ -563,7 +608,10 @@ class Qwen2ForCL(Qwen2PreTrainedModel):
         self.model_args = model_kargs["model_args"]
         self.model = Qwen2Model(config)
 
-        self.query = QueryHead(config.hidden_size)
+        if self.model_args.pooler_type == 'query':
+            self.pool = QueryHead(config.hidden_size)
+        elif self.model_args.pooler_type == 'attention':
+            self.pool = AttentionPooling(config.hidden_size)
 
         # if self.model_args.do_mlm:
         #     self.lm_head = RobertaLMHead(config)
@@ -571,7 +619,7 @@ class Qwen2ForCL(Qwen2PreTrainedModel):
         cl_init(self, config)
         self.map = SemanticModel(input_dim=1536)
 
-        if self.model_args.freeze_embed:
+        if self.model_args.freeze_base:
             # Freeze Qwen parameters
             for param in self.model.parameters():
                 param.requires_grad = False

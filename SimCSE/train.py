@@ -99,7 +99,7 @@ class ModelArguments:
     pooler_type: str = field(
         default="last",
         metadata={
-            "help": "What kind of pooler to use (last, query)."
+            "help": "What kind of pooler to use (last, query, attention). Only effective if using Qwen2."
         }
     ) 
     hard_negative_weight: float = field(
@@ -126,10 +126,10 @@ class ModelArguments:
             "help": "Use MLP only during training"
         }
     )
-    freeze_embed: bool = field(
+    freeze_base: bool = field(
         default = False,
         metadata={
-            "help": "Freeze roberta and following mlp if pooler type is 'cls'."
+            "help": "Freeze base model. For roberta, freeze roberta and following mlp; for qwen, freeze qwen."
         }
     )
     loss_function_id: int = field(
@@ -138,16 +138,28 @@ class ModelArguments:
             "help": "The index of the loss function."
         }
     )
-    num_paraphrased: int = field(
+    num_paraphrased_llama: int = field(
         default = None,
         metadata={
-            "help": "Number of paraphrased examples."
+            "help": "Number of LLama paraphrased examples."
         }
     )
-    num_negative: int = field(
+    num_paraphrased_gpt: int = field(
         default = None,
         metadata={
-            "help": "Number of negative examples."
+            "help": "Number of GPT paraphrased examples."
+        }
+    )
+    num_negative_llama: int = field(
+        default = None,
+        metadata={
+            "help": "Number of LLama negative examples."
+        }
+    )
+    num_negative_gpt: int = field(
+        default = None,
+        metadata={
+            "help": "Number of GPT negative examples."
         }
     )
     
@@ -442,17 +454,31 @@ def main():
     # Prepare features
     column_names = datasets["train"].column_names
     original_cname = 'original'
-    paraphrase_cnames = [cname for cname in column_names if cname.startswith('unchanged')]
-    negative_cnames = [cname for cname in column_names if cname.startswith('negative')] # + [cname for cname in column_names if cname.startswith('positive')]
-    import pdb; pdb.set_trace()  # check features
-    num_paraphrased = model_args.num_paraphrased
-    num_negative = model_args.num_negative
-    assert num_paraphrased <= len(paraphrase_cnames), f"Number of paraphrased examples ({num_paraphrased}) exceeds the max number of paraphrases ({len(paraphrase_cnames)})."
-    assert num_negative <= len(negative_cnames), f"Number of negative examples ({num_negative}) exceeds the max number of negatives ({len(negative_cnames)})."
+    paraphrase_llama_cnames = [cname for cname in column_names if cname.startswith('paraphrase') and cname.endswith('llama')]
+    paraphrase_gpt_cnames = [cname for cname in column_names if cname.startswith('paraphrase') and cname.endswith('gpt')]
+    negative_llama_cnames = [cname for cname in column_names if cname.startswith('spoofing') and cname.endswith('llama')]
+    negative_gpt_cnames = [cname for cname in column_names if cname.startswith('spoofing') and cname.endswith('gpt')]
+
+    num_paraphrased_llama, num_paraphrased_gpt = model_args.num_paraphrased_llama, model_args.num_paraphrased_gpt
+    num_negative_llama, num_negative_gpt = model_args.num_negative_llama, model_args.num_negative_gpt
+
+    assert num_paraphrased_llama <= len(paraphrase_llama_cnames), f"Number of LLama paraphrased examples ({num_paraphrased_llama}) exceeds the max number of paraphrases ({len(paraphrase_llama_cnames)})."
+    assert num_paraphrased_gpt <= len(paraphrase_gpt_cnames), f"Number of GPT paraphrased examples ({num_paraphrased_gpt}) exceeds the max number of paraphrases ({len(paraphrase_gpt_cnames)})."
+    assert num_negative_llama <= len(negative_llama_cnames), f"Number of LLama negative examples ({num_negative_llama}) exceeds the max number of negatives ({len(negative_llama_cnames)})."
+    assert num_negative_gpt <= len(negative_gpt_cnames), f"Number of GPT negative examples ({num_negative_gpt}) exceeds the max number of negatives ({len(negative_gpt_cnames)})."
     
-    paraphrase_cnames = paraphrase_cnames[:num_paraphrased]
-    negative_cnames = negative_cnames[:num_negative]
-    print(f"======Contrastive learning with {num_paraphrased} paraphrased and {num_negative} negative examples.======")
+    paraphrase_cnames = paraphrase_llama_cnames[:num_paraphrased_llama] + paraphrase_gpt_cnames[:num_paraphrased_gpt]
+    negative_cnames = negative_llama_cnames[:num_negative_llama] + negative_gpt_cnames[:num_negative_gpt]
+
+    if 'paraphrase_wm' in column_names:
+        paraphrase_cnames.append('paraphrase_wm')
+        print('Added watermarked text as paraphrase.')
+
+    num_paraphrased = len(paraphrase_cnames)
+    model_args.num_paraphrased = num_paraphrased
+    num_negative = len(negative_cnames)
+    model_args.num_negative = num_negative
+    print(f"======Contrastive learning with {len(paraphrase_cnames)} paraphrased and {len(negative_cnames)} negative examples.======")
 
     def prepare_features(examples):
         # padding = longest (default)

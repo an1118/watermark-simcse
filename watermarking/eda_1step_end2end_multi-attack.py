@@ -77,16 +77,6 @@ def main(args):
     # vocabulary_size = watermark_tokenizer.vocab_size  # vacalulary size of LLM. Notice: OPT is 50272
     vocabulary_size = 128256
     mapping_list = vocabulary_mapping(vocabulary_size, 384, seed=66)
-    # load test dataset. Here we use C4 realnewslike dataset as an example. Feel free to use your own dataset.
-    # data_path = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/realnewslike/c4-train.00000-of-00512.json.gz"
-    # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
-    data_path = args.data_path
-    if 'onebatch' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=128, num_of_sent=args.num_of_sent)
-    elif 'c4' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
-    elif 'lfqa' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100)
 
     watermark = Watermark(device=device,
                       watermark_tokenizer=watermark_tokenizer,
@@ -108,88 +98,24 @@ def main(args):
                       delta_0 = args.delta_0,
                       delta = args.delta,
                       )
-        
-    finished = 0
-    if os.path.exists(f'{args.output_file}'):
-        df = pd.read_csv(f'{args.output_file}')
-        finished = df.shape[0]
-        print(f'===skiped first {finished} rows.===')
-    else:
-        output_folder = os.path.dirname(args.output_file)
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        df = pd.DataFrame(columns=['text_id', 'original_text', 'adaptive_watermarked_text', 'watermarked_corrected_text', 'paraphrased_watermarked_text', 'hate_watermarked_text', 'human_score', 'adaptive_watermarked_text_score', 'corrected_watermarked_score', 'paraphrased_watermarked_text_score', 'hate_watermarked_text_score'])
+            
+    df = pd.read_csv(args.result_file)
+    df = df.head(10)
+    print(args.result_file)
+    tqdm.pandas()
 
-    watermark_rate = []  # debug
-    for i in tqdm(range(finished, len(dataset))):
-        # sys_prompt = 'Paraphrase the following text while preserving the original meaning and tone. Use a natural variation in word choices and sentence structure, but ensure the meaning remains unchanged. Avoid being overly repetitive or predictable. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'
-        # sys_prompt = '''Rewrite the following text by changing the wording but keeping all the facts exactly the same. The new version should match the original sentiment very closely, not just in positivity or negativity but also in the nuanced expression of emotions. Aim to minimize any changes that could alter the text's subtle tone, and ensure the paraphrased version is close in meaning to the original. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'''
-        text = ' '.join(nltk.sent_tokenize(dataset[i]['text'])[:args.num_of_sent])
-        messages = [
-            {
-                "role": "system", "content": SYS_PROMPT,
-            },
-            {
-                "role": "user",  "content": text
-            },
-        ]
-        prompt = watermark.watermark_tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        
-        # unwatermarked_text = watermark.generate_unwatermarked(prompt)
-        watermarked_text = watermark.generate_watermarked(prompt, text)
-
-        if args.correct_grammar:  # do grammar correction
-            grammar_prompt = "Please correct any grammar errors and improve the coherence of the text. Make necessary adjustments to enhance the flow and clarity while preserving the original meaning as much as possible. Respond with only the revised text. Do not add additional things like 'Sure, here is the revised text'."
-            messages = [
-                {
-                    "role": "system", "content": grammar_prompt,
-                },
-                {
-                    "role": "user",  "content": f"Here's the text: \n{watermarked_text}"
-                },
-            ]
-            grammar_prompt = watermark.watermark_tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            watermarked_corrected_text = watermark.generate_unwatermarked(grammar_prompt)
-        else:
-            watermarked_corrected_text = ''
-        
+    for j in range(5):
+        print(f'paraphrase No.{j} ...')
         # attack
-        paraphrased_watermarked_text = paraphrase_attack(watermarked_text)
-        hate_watermarked_text = hate_attack(watermarked_text)
+        hate_watermarked_text = df['adaptive_watermarked_text'].progress_apply(hate_attack)
 
         # detections
-        human_score = watermark.detection(text)
-        adaptive_watermarked_text_score = watermark.detection(watermarked_text)
-        if args.correct_grammar:  # do grammar correction
-            corrected_watermarked_score = watermark.detection(watermarked_corrected_text)
-        else:
-            corrected_watermarked_score = None
-        paraphrased_watermarked_text_score = watermark.detection(paraphrased_watermarked_text) if paraphrased_watermarked_text is not None else ''
-        hate_watermarked_text_score = watermark.detection(hate_watermarked_text) if hate_watermarked_text is not None else ''
+        hate_watermarked_text_score = [watermark.detection(x) if x is not None else '' for x in tqdm(hate_watermarked_text)]
 
-        data = {
-            'text_id': [i],
-            'original_text': [text],
-            # 'unwatermarked_text': [unwatermarked_text],
-            'adaptive_watermarked_text': [watermarked_text],
-            'watermarked_corrected_text': [watermarked_corrected_text],
-            'paraphrased_watermarked_text': [paraphrased_watermarked_text],
-            'hate_watermarked_text': [hate_watermarked_text],
-            'human_score': [human_score],
-            'adaptive_watermarked_text_score': [adaptive_watermarked_text_score],
-            'corrected_watermarked_score': [corrected_watermarked_score],
-            'paraphrased_watermarked_text_score': [paraphrased_watermarked_text_score],
-            'hate_watermarked_text_score': [hate_watermarked_text_score],
-        }
-        df  = pd.concat([df, pd.DataFrame(data)], ignore_index=True)
+        df[f'hate_watermarked_text_{j}'] = hate_watermarked_text
+        df[f'hate_watermarked_text_score_{j}'] = hate_watermarked_text_score
+
         df.to_csv(f'{args.output_file}', index=False)
-        watermark_rate.append((watermark.num_watermarked_token, watermark.num_token))
-        watermark.num_watermarked_token, watermark.num_token = 0, 0
-    
-    tmp = [w / t for w, t in watermark_rate]
-    awr = sum(tmp) / len(tmp)
-    print(f'=== Average watermarked rate: {awr}')
-
 
 
 if __name__ == '__main__':
@@ -224,8 +150,8 @@ if __name__ == '__main__':
                         help='End-to-end mapping model.')
     parser.add_argument('--hard_negative_weight', default=0, type=float, \
                         help='The **logit** of weight for hard negatives (only effective if hard negatives are used).')
-    parser.add_argument('--data_path', default='', type=str, \
-                        help='Data Path.')
+    parser.add_argument('--result_file', default='', type=str, \
+                        help='Result path.')
 
     args = parser.parse_args()
     main(args)

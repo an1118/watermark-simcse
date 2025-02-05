@@ -38,16 +38,26 @@ def draw_roc(human_scores, wm_score):
     # plt.show()
     print('ROC-AUC:', round(auc_w*100, 2))
 
-model_name = 'twitter-roberta-base-sentiment'  # 'gte-Qwen2-1.5B-instruct'
-generation_model = "GPT-4o"  # 'llamadata'
+model_name = 'gte-Qwen2-1.5B-instruct'  # 'twitter-roberta-base-sentiment'
+if model_name == 'gte-Qwen2-1.5B-instruct':
+    pool_type = 'attention'
+    freeze_type = 'freeze'
+    model_name = f'{model_name}-{pool_type}-{freeze_type}'
+batch_size = 64
+num_epoch=1000
+num_paraphrased_llama=4
+num_paraphrased_gpt=4
+num_negative_llama=1
+num_negative_gpt=1
+
 for cl_idx in [2]:
-    for neg_weight in [1]:
+    for neg_weight in [32]:
         print(f'========cl{cl_idx} neg weigh{neg_weight}========')
-        result_path = f'/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/{model_name}/128batch_2000epochs/sanity-check/{generation_model}/8paras-1negs/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
+        result_path = f'/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
         df = pd.read_csv(result_path)
 
         human_scores = df['human_score'].to_list()
-        for type_ in ['adaptive', 'hate', 'paraphrased']:
+        for type_ in ['adaptive', 'paraphrased', 'hate']:
             print(type_, end=' ')
             wm_scores = df[f'{type_}_watermarked_text_score'].to_list()
             # debug
