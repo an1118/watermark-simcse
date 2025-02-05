@@ -121,6 +121,16 @@ def paraphrase_attack(text):
                 print(text)
                 return None
 
+def extract_info(text):
+    if not isinstance(text, str):
+        print(text)
+        return None
+    import re
+    pattern = r"\[MODIFIED_TEXT\](.*?)(\[/MODIFIED_TEXT\]|(?=\Z))"
+    match = re.search(pattern, text, re.DOTALL)
+    extracted = match.group(1).strip() if match else None
+    return extracted
+
 def hate_attack(text):
     # prompt = f"Please take the following neutral text and modify it to reflect a more negative or aggressive tone while making the fewest changes possible. Aim to maintain the original structure and content as much as you can, but shift the implications to convey a more hostile attitude. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly."
     # prompt = '''Please modify the following text to reflect a more negative or aggressive tone. \nRequirements: \n- Add negative or aggressive words accounting for around 10% of the total text;\n- Maintain the original structure as closely as possible;\n- Shift the underlying implications to convey a more hostile attitude.'''
@@ -148,6 +158,8 @@ def hate_attack(text):
         output_text = response.choices[0].message.content
         if output_text:  # not None
             keep_call = False
+            if 'Response Format' in spoofing_prompt:
+                output_text = extract_info(output_text)
             return output_text
         else:
             cnt += 1
