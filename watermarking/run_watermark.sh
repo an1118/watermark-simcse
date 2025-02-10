@@ -1,3 +1,5 @@
+#!/bin/bash
+
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -37,7 +39,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-dataset=c4
+# echo "Arguments received: $@"
 
 num_of_sent=10
 alpha=2.0
@@ -57,7 +59,7 @@ eda_output_file="$watermark_output_dir/multiple-spoofing-attack.csv"  # for c4
 HARD_NEGATIVE_WEIGHT=$(python3 -c "import math; print(math.log(${neg_weight}))")
 
 # watermarking
-CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/generation_1step_end2end.py \
+python watermarking/generation_1step_end2end.py \
     --embed_map_model=$embed_map_model \
     --hard_negative_weight=$HARD_NEGATIVE_WEIGHT \
     --num_of_sent=${num_of_sent} \
@@ -66,14 +68,14 @@ CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/generation_1step_end2end.py \
     --data_path ${data_path} \
     # --correct_grammar=false
 
-# # ===== get similarity after 0-1 mapping =====
-# CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/eda_1step_end2end.py \
-#     --embed_map_model=$embed_map_model \
-#     --hard_negative_weight=$HARD_NEGATIVE_WEIGHT \
-#     --num_of_sent=${num_of_sent} \
-#     --output_file=${eda_output_file} \
-#     --alpha=${alpha} --delta_0=$delta_0 --delta=$delta \
-#     --result_file=${watermark_output_file}
+# ===== get similarity after 0-1 mapping =====
+python watermarking/eda_1step_end2end.py \
+    --embed_map_model=$embed_map_model \
+    --hard_negative_weight=$HARD_NEGATIVE_WEIGHT \
+    --num_of_sent=${num_of_sent} \
+    --output_file=${eda_output_file} \
+    --alpha=${alpha} --delta_0=$delta_0 --delta=$delta \
+    --result_file=${watermark_output_file}
 
 # # ===== multiple time attack =====
 # CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/eda_1step_end2end_multi-attack.py \

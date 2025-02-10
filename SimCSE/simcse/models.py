@@ -292,7 +292,10 @@ def cl_forward(cls,
     # Separate representation
     z1 = pooler_output[:, 0]
     z2_list = [pooler_output[:, i] for i in range(1, cls.model_args.num_paraphrased + 1)]
-    z3_list = [pooler_output[:, i] for i in range(cls.model_args.num_paraphrased + 1, cls.model_args.num_paraphrased + cls.model_args.num_negative + 1)]
+    if cls.model_args.num_negative == 0:
+        z3_list = []
+    else:
+        z3_list = [pooler_output[:, i] for i in range(cls.model_args.num_paraphrased + 1, cls.model_args.num_paraphrased + cls.model_args.num_negative + 1)]
 
     # Gather all embeddings if using distributed training
     if dist.is_initialized() and cls.training:
@@ -347,7 +350,10 @@ def cl_forward(cls,
         z1_z1_cos_removed = remove_diagonal_elements(z1_z1_cos)  # (bs, bs-1)
         z1_z2_cos_list = [cls.sim(z1, z2).unsqueeze(1) for z2 in z2_list]  # [(bs, 1)] * num_paraphrased
         z1_z3_cos_list = [cls.sim(z1, z3).unsqueeze(1) for z3 in z3_list]  # [(bs,1)] * num_negative
-        z1_z3_cos = torch.cat(z1_z3_cos_list, dim=1)  # (bs, num_negative)
+        if z1_z3_cos_list:
+            z1_z3_cos = torch.cat(z1_z3_cos_list, dim=1)  # (bs, num_negative)
+        else:
+            z1_z3_cos = torch.empty((z1.size(0), 0), device=z1.device)  # (bs, 0)
 
         loss_fct = nn.CrossEntropyLoss()
         loss_1 = 0
@@ -420,9 +426,12 @@ def cl_forward(cls,
     # loss_3 = loss_3[valid_for_loss3.bool()]
 
     # calculate loss_4: similarity between original and negative text
-    loss_4_list = [cls.sim(z1, z3).unsqueeze(1) for z3 in z3_list]  # [(bs, 1)] * num_negative
-    loss_4_tensor = torch.cat(loss_4_list, dim=1)  # (bs, num_negative)
-    loss_4 = loss_4_tensor.mean()
+    if cls.model_args.num_negative == 0:
+        loss_4 = None
+    else:
+        loss_4_list = [cls.sim(z1, z3).unsqueeze(1) for z3 in z3_list]  # [(bs, 1)] * num_negative
+        loss_4_tensor = torch.cat(loss_4_list, dim=1)  # (bs, num_negative)
+        loss_4 = loss_4_tensor.mean()
 
     loss = lambda_1 * loss_1 + lambda_2 * loss_2
 
@@ -431,11 +440,12 @@ def cl_forward(cls,
         'loss_1': loss_1,
         'loss_2': loss_2,
         'loss_3': loss_3,
-        'loss_4': loss_4,
         'logits': cos_sim,
         'hidden_states': outputs.hidden_states,
         'attentions': outputs.attentions,
     }
+    if cls.model_args.num_negative != 0:
+        result['loss_4'] = loss_4
     if not return_dict:
         output = (cos_sim,) + outputs[2:]
         return ((loss,) + output) if loss is not None else output
