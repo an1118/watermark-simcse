@@ -421,7 +421,7 @@ def cl_forward(cls,
     # calculate loss_3: similarity between original and paraphrased text
     loss_3_list = [cls.sim(z1, z2).unsqueeze(1) for z2 in z2_list]  # [(bs, 1)] * num_paraphrased
     loss_3_tensor = torch.cat(loss_3_list, dim=1)  # (bs, num_paraphrased)
-    loss_3 = - loss_3_tensor.mean()
+    loss_3 = loss_3_tensor.mean() * cls.model_args.temp
     # debug: 
     # loss_3 = loss_3[valid_for_loss3.bool()]
 
@@ -431,7 +431,7 @@ def cl_forward(cls,
     else:
         loss_4_list = [cls.sim(z1, z3).unsqueeze(1) for z3 in z3_list]  # [(bs, 1)] * num_negative
         loss_4_tensor = torch.cat(loss_4_list, dim=1)  # (bs, num_negative)
-        loss_4 = loss_4_tensor.mean()
+        loss_4 = loss_4_tensor.mean() * cls.model_args.temp
 
     loss = lambda_1 * loss_1 + lambda_2 * loss_2
 

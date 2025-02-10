@@ -20,12 +20,15 @@ def pre_process(data_path, min_length, data_size=500, num_of_sent=None):
     data = []
     if 'onebatch' in data_path.lower():
         dataset = pd.read_csv(data_path)
-        dataset = dataset['original'].tolist()
-        for text in dataset:
-            text = text.strip()
-            data.append({'text': text})
-            if len(data) ==  data_size:
-                break
+        for _, row in dataset.iterrows():
+            text = row['original'].strip()
+            if 'imdb' in data_path.lower() and 'c4' not in data_path.lower():
+                original_sentiment = row['original_sentiment']
+                data.append({'text': text, 'original_sentiment': original_sentiment})
+            else:
+                data.append({'text': text})
+            if len(data) == data_size:
+            break
     elif 'c4' in data_path.lower():
         dataset = load_dataset('json', data_files=data_path)
         for text in dataset['train']['text']:
