@@ -157,8 +157,8 @@ def main(args):
         paraphrased_watermarked_text = paraphrase_attack(watermarked_text)
         if 'imdb' in args.data_path.lower() and 'c4' not in args.data_path.lower():
             # match the original sentiment
-            original_sentiment = dataset[i]['original_sentiment']
-            hate_watermarked_text = hate_attack(watermarked_text, original_sentiment)
+            modified_sentiment_ground_truth = dataset[i]['modified_sentiment_ground_truth']
+            hate_watermarked_text = hate_attack(watermarked_text, modified_sentiment_ground_truth)
         else:
             hate_watermarked_text = hate_attack(watermarked_text)
 

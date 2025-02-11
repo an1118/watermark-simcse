@@ -11,6 +11,7 @@ import nltk
 import os
 import pandas as pd
 from random import shuffle
+import re
 
 from utils import load_model, vocabulary_mapping
 from watermark import Watermark
@@ -80,6 +81,9 @@ Your task is to modify the given text to clearly shift its sentiment to {modifie
 [MODIFIED_TEXT] <modified_text> [/MODIFIED_TEXT]
 ```
 '''
+
+sentiment_judge_prompt = '''Please act as a judge and determine the sentiment of the following text. Your task is to assess whether the sentiment is positive, negative, or neutral based on the overall tone and emotion conveyed in the text. Consider factors like word choice, emotional context, and any implied feelings. The sentiment can only be chosen from 'positive', 'negative', and 'neutral'. 
+Begin your evaluation by providing a short explanation for your judgment. After providing your explanation, please indicate the sentiment by strictly following this format: "[[sentiment]]", for example: "Sentiment: [[positive]]".'''
 
 sentiment_mapping = {
     'positive': 'negative',
@@ -194,9 +198,8 @@ def extract_info(text):
     extracted = match.group(1).strip() if match else None
     return extracted
 
-def hate_attack(text, original_sentiment=None):
-    if original_sentiment:
-        modified_sentiment_ground_truth = sentiment_mapping[original_sentiment]
+def hate_attack(text, modified_sentiment_ground_truth=None):
+    if modified_sentiment_ground_truth:
         max_change = int(len(text.split()) * 0.2)
         prompt = imdb_spoofing_prompt.replace('{modified_sentiment}', modified_sentiment_ground_truth).replace('{x}', str(max_change))
     else:
