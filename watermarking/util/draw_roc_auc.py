@@ -38,22 +38,24 @@ def draw_roc(human_scores, wm_score):
     # plt.show()
     print('ROC-AUC:', round(auc_w*100, 2))
 
-model_name = 'gte-Qwen2-1.5B-instruct'  # 'twitter-roberta-base-sentiment'
+model_name = "gte-Qwen2-1.5B-instruct" # 'gte-Qwen2-1.5B-instruct'  # 'twitter-roberta-base-sentiment'
 if model_name == 'gte-Qwen2-1.5B-instruct':
     pool_type = 'attention'
-    freeze_type = 'freeze'
-    model_name = f'{model_name}-{pool_type}-{freeze_type}'
-batch_size = 64
-num_epoch=1000
-num_paraphrased_llama=4
-num_paraphrased_gpt=4
-num_negative_llama=1
-num_negative_gpt=1
+    freeze_type = '-freeze'
+    model_name = f'{model_name}-{pool_type}{freeze_type}'
+dataset = "c4"
+batch_size = 128
+num_epoch=43
+num_paraphrased_llama=0
+num_paraphrased_gpt=0
+num_negative_llama=0
+num_negative_gpt=0
+num_summary=4
 
 for cl_idx in [2]:
-    for neg_weight in [32]:
+    for neg_weight in [1]:
         print(f'========cl{cl_idx} neg weigh{neg_weight}========')
-        result_path = f'/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
+        result_path = f'/blue/buyuheng/li_an.ucsb/projects/watermark-simcse/watermarking/outputs/end2end/{dataset}/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}-{num_summary}/watermark-8b-loss_cl{cl_idx}_gr_wneg{neg_weight}-10sent-alpha2.0-delta0.2|0.5.csv'
         df = pd.read_csv(result_path)
 
         human_scores = df['human_score'].to_list()

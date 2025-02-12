@@ -43,6 +43,11 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    --num_summary)
+      num_summary="$2"
+      shift
+      shift
+      ;;
     --neg_weight)
       neg_weight="$2"
       shift
@@ -109,6 +114,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --num_paraphrased_gpt $num_paraphrased_gpt \
     --num_negative_llama $num_negative_llama \
     --num_negative_gpt $num_negative_gpt \
+    --num_summary $num_summary \
     --num_train_epochs $train_epochs \
     --per_device_train_batch_size $batch_size \
     --learning_rate 3e-5 \
@@ -118,9 +124,9 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --save_steps 5 \
     --save_total_limit 1 \
     --pooler_type ${pooler_type} \
-    --overwrite_output_dir \
     --temp 0.05 \
     --do_train \
+    --overwrite_output_dir \
     --fp16 \
     --gradient_checkpointing \
     --report_to="wandb" \

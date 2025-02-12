@@ -11,12 +11,12 @@ batch_size=64
 train_epochs=20
 LOSS_FUNCTION_IDS=(2)  # 2 3 4
 NEG_WEIGHTS=(1)  # 1 32 64 128
-num_paraphrased_llama=4
-num_paraphrased_gpt=4
-num_negative_llama=1
-num_negative_gpt=1
-data_generation_model="mix_GPT-4o_Llama-3.1-8B-Instruct"
-data_path="/mnt/data2/lian/projects/watermark/data/${data_generation_model}/onebatch-c4-train-simcse-all-filtered-formatted.csv"
+num_paraphrased_llama=8
+num_paraphrased_gpt=8
+num_negative_llama=0
+num_negative_gpt=0
+num_summary=0
+# data_path="$repo/data/sc-onebatch-$dataset-train-simcse-all-filtered-formatted.csv"
 
 model_name_=$(basename "$model_name")
 
@@ -32,7 +32,7 @@ fi
 
 for loss_function_id in "${LOSS_FUNCTION_IDS[@]}"; do
   for neg_weight in "${NEG_WEIGHTS[@]}"; do
-    embed_map_model="${repo}/SimCSE/result/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}/end2end-c4-loss_cl${loss_function_id}-wneg${neg_weight}"
+    embed_map_model="${repo}/SimCSE/result/${dataset}/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-${num_summary}/end2end-$dataset-loss_cl${loss_function_id}-wneg${neg_weight}"
     bash SimCSE/run_sup_example_inbatch.sh \
       --gpu_id $gpu_id \
       --output_dir $embed_map_model \
@@ -43,6 +43,7 @@ for loss_function_id in "${LOSS_FUNCTION_IDS[@]}"; do
       --num_paraphrased_gpt $num_paraphrased_gpt \
       --num_negative_llama $num_negative_llama \
       --num_negative_gpt $num_negative_gpt \
+      --num_summary $num_summary \
       --neg_weight $neg_weight \
       --model_name $model_name \
       --train_file $data_path \

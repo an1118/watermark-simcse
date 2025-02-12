@@ -81,7 +81,7 @@ def main(args):
     # data_path = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/realnewslike/c4-train.00000-of-00512.json.gz"
     # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
     data_path = args.data_path
-    if 'onebatch' in data_path.lower():
+    if 'sc' in data_path.lower():
         dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=128, num_of_sent=args.num_of_sent)
     elif 'c4' in data_path.lower():
         dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
