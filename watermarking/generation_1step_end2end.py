@@ -152,7 +152,7 @@ def main(args):
             modified_sentiment_ground_truth = dataset[i]['modified_sentiment_ground_truth']
             hate_watermarked_text = hate_attack(watermarked_text, modified_sentiment_ground_truth)
         else:
-            hate_watermarked_text = hate_attack(watermarked_text)
+            hate_watermarked_text, hate_attack_output = hate_attack(watermarked_text)
 
         # detections
         human_score = watermark.detection(text)
@@ -172,6 +172,7 @@ def main(args):
             'watermarked_corrected_text': [watermarked_corrected_text],
             'paraphrased_watermarked_text': [paraphrased_watermarked_text],
             'hate_watermarked_text': [hate_watermarked_text],
+            'hate_attack_original_output': [hate_attack_output],
             'human_score': [human_score],
             'adaptive_watermarked_text_score': [adaptive_watermarked_text_score],
             'corrected_watermarked_score': [corrected_watermarked_score],

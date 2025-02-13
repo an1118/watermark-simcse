@@ -38,24 +38,33 @@ def draw_roc(human_scores, wm_score):
     # plt.show()
     print('ROC-AUC:', round(auc_w*100, 2))
 
+# model parameters
 model_name = "twitter-roberta-base-sentiment" # 'gte-Qwen2-1.5B-instruct'  # 'twitter-roberta-base-sentiment'
 if model_name == 'gte-Qwen2-1.5B-instruct':
     pool_type = 'attention'
     freeze_type = '-freeze'
     model_name = f'{model_name}-{pool_type}{freeze_type}'
-dataset = "imdb"
+# training parameters
 batch_size = 128
 num_epoch=87
-cl_weight = 1.0
-tl_weight = 0.0
+# loss function parameters
+cl_weight = 0.0
+tl_weight = 1.0
 neg_weight = 1
-margin = 0.5
+margin = 0.8
 
+# training data parameters
+dataset = "imdb"
 num_paraphrased_llama=8
 num_paraphrased_gpt=8
 num_negative_llama=0
 num_negative_gpt=1
 num_summary=0
+
+# watermarking parameters
+wm_dataset_name = 'c4'
+alpha=2.0
+delta_0, delta=0.2, 0.5
 
 if cl_weight != 0:
   neg_weight=neg_weight  # 1 32 64 128
@@ -66,11 +75,7 @@ if tl_weight != 0:
 else:
   margin=999
 
-
-alpha=2.0
-delta0, delta=0.2, 0.5
-
-result_path = f'/blue/buyuheng/li_an.ucsb/projects/watermark-simcse/watermarking/outputs/end2end/{dataset}/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}-{num_summary}/watermark-loss_cl{cl_weight}-tl{tl_weight}-wneg{neg_weight}-margin{margin}-10sent-alpha{alpha}-delta{delta0}|{delta}.csv'
+result_path = f'/blue/buyuheng/li_an.ucsb/projects/watermark-simcse/watermarking/outputs/{dataset}/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}-{num_summary}/loss_cl{cl_weight}-tl{tl_weight}-wneg{neg_weight}-margin{margin}/wm-{wm_dataset_name}-alpha{alpha}-delta{delta_0}|{delta}.csv'
 
 print(os.path.basename(result_path))
 df = pd.read_csv(result_path)

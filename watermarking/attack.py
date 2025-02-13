@@ -228,20 +228,28 @@ def hate_attack(text, modified_sentiment_ground_truth=None):
         if output_text:  # not None
             keep_call = False
             if 'Response Format' in prompt:
-                output_text = extract_info(output_text)
-            if modified_sentiment_ground_truth:  # not None
-                modified_sentiment = sentiment_judge(output_text, model='GPT-4o')
+                spoofing_text = extract_info(output_text)
+            else:
+                spoofing_text = output_text
+            # check if the sentiment is correctly modified
+            if modified_sentiment_ground_truth:  # imdb data
+                modified_sentiment = sentiment_judge(spoofing_text, model='GPT-4o')
                 if modified_sentiment != modified_sentiment_ground_truth:
                     keep_call = True
+            else:
+                original_sentiment = sentiment_judge(text, model='GPT-4o')
+                modified_sentiment = sentiment_judge(spoofing_text, model='GPT-4o')
+                if modified_sentiment == original_sentiment:
+                    keep_call = True
             if not keep_call:
-                return output_text
+                return spoofing_text, output_text
         cnt += 1
         if cnt <= 10:
             print('===try calling api one more time===')
         else:
             print('API call failed!')
             print(text)
-            return None
+            return None, output_text
 
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
