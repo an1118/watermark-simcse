@@ -76,16 +76,9 @@ def main(args):
     # vocabulary_size = watermark_tokenizer.vocab_size  # vacalulary size of LLM. Notice: OPT is 50272
     vocabulary_size = 128256
     mapping_list = vocabulary_mapping(vocabulary_size, 384, seed=66)
-    # load test dataset. Here we use C4 realnewslike dataset as an example. Feel free to use your own dataset.
-    # data_path = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/realnewslike/c4-train.00000-of-00512.json.gz"
-    # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
+    # load test dataset.
     data_path = args.data_path
-    if 'sc' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100, num_of_sent=args.num_of_sent)
-    elif 'c4' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
-    elif 'lfqa' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100)
+    dataset = pre_process(data_path, min_length=args.min_new_tokens, max_length=args.max_new_tokens, data_size=args.data_size)
 
     watermark = Watermark(device=device,
                       watermark_tokenizer=watermark_tokenizer,
@@ -123,7 +116,7 @@ def main(args):
     for i in tqdm(range(finished, len(dataset))):
         # sys_prompt = 'Paraphrase the following text while preserving the original meaning and tone. Use a natural variation in word choices and sentence structure, but ensure the meaning remains unchanged. Avoid being overly repetitive or predictable. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'
         # sys_prompt = '''Rewrite the following text by changing the wording but keeping all the facts exactly the same. The new version should match the original sentiment very closely, not just in positivity or negativity but also in the nuanced expression of emotions. Aim to minimize any changes that could alter the text's subtle tone, and ensure the paraphrased version is close in meaning to the original. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'''
-        text = ' '.join(nltk.sent_tokenize(dataset[i]['text'])[:args.num_of_sent])
+        text = dataset[i]['text']
         messages = [
             {
                 "role": "system", "content": SYS_PROMPT,
@@ -220,14 +213,14 @@ if __name__ == '__main__':
                         help='OpenAI API key.')
     parser.add_argument('--output_file', default='outputs', type=str, \
                         help='Output directory.')
-    parser.add_argument('--num_of_sent', default=2, type=int, \
-                        help='Number of sentences to paraphrase.')
     parser.add_argument('--correct_grammar', default=False, type=bool, \
                         help='Correct grammar after adding watermark.')
     parser.add_argument('--embed_map_model', default='', type=str, \
                         help='End-to-end mapping model.')
     parser.add_argument('--data_path', default='', type=str, \
                         help='Data Path.')
+    parser.add_argument('--data_size', default=100, type=int, \
+                        help='Number of data.')
 
     args = parser.parse_args()
     main(args)

@@ -10,8 +10,8 @@ dataset=imdb
 batch_size=128
 train_epochs=87
 
-cl_weight=0.1
-tl_weight=0.9
+cl_weight=0.0
+tl_weight=1.0
 neg_weight=1
 margin=0.8
 
@@ -44,81 +44,55 @@ if [ "$freeze_base" == "True" ]; then
     model_name_="${model_name_}-freeze"
 fi
 
-
+# todo: delete sanity-check
 embed_map_model="${repo}/SimCSE/result/${dataset}/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-${num_summary}/loss_cl${cl_weight}-tl${tl_weight}-wneg${neg_weight}-margin${margin}"
-bash SimCSE/run_sup_example_inbatch.sh \
-  --gpu_id $gpu_id \
-  --train_file ${data_path_prefix}-train.csv \
-  --valid_file ${data_path_prefix}-valid.csv \
-  --dataset $dataset \
-  --num_paraphrased_llama $num_paraphrased_llama \
-  --num_paraphrased_gpt $num_paraphrased_gpt \
-  --num_negative_llama $num_negative_llama \
-  --num_negative_gpt $num_negative_gpt \
-  --num_summary $num_summary \
-  --model_name $model_name \
-  --pooler_type $pooler_type \
-  --freeze_base $freeze_base \
-  --batch_size $batch_size \
-  --train_epochs $train_epochs \
-  --cl_weight $cl_weight \
-  --tl_weight $tl_weight \
-  --neg_weight $neg_weight \
-  --margin $margin \
-  --output_dir $embed_map_model
+# bash SimCSE/run_sup_example_inbatch.sh \
+#   --gpu_id $gpu_id \
+#   --train_file ${data_path_prefix}-train.csv \
+#   --valid_file ${data_path_prefix}-valid.csv \
+#   --dataset $dataset \
+#   --num_paraphrased_llama $num_paraphrased_llama \
+#   --num_paraphrased_gpt $num_paraphrased_gpt \
+#   --num_negative_llama $num_negative_llama \
+#   --num_negative_gpt $num_negative_gpt \
+#   --num_summary $num_summary \
+#   --model_name $model_name \
+#   --pooler_type $pooler_type \
+#   --freeze_base $freeze_base \
+#   --batch_size $batch_size \
+#   --train_epochs $train_epochs \
+#   --cl_weight $cl_weight \
+#   --tl_weight $tl_weight \
+#   --neg_weight $neg_weight \
+#   --margin $margin \
+#   --output_dir $embed_map_model
 
 
-num_of_sent=10
+data_size=100
 alpha=2.0
 delta_0=0.2
 delta=0.5
 
-watermark_output_dir="$repo/watermarking/outputs/end2end/$dataset/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-${num_summary}"
-watermark_output_file="$watermark_output_dir/watermark-loss_cl${cl_weight}-tl${tl_weight}-wneg${neg_weight}-margin${margin}-${num_of_sent}sent-alpha${alpha}-delta${delta_0}|${delta}.csv"  # for c4
-eda_output_file="$watermark_output_dir/watermark-loss_cl${cl_weight}-tl${tl_weight}-wneg${neg_weight}-margin${margin}-${num_of_sent}sent-alpha${alpha}-delta${delta_0}|${delta}-sim.csv"  # for c4
+if [[ "${watermark_data_path,,}" == *"c4"* ]]; then
+  wm_dataset_name="c4"
+elif [[ "${watermark_data_path,,}" == *"imdb"* ]]; then
+  wm_dataset_name="imdb"
+elif [[ "${watermark_data_path,,}" == *"lfqa"* ]]; then
+  wm_dataset_name="lfqa"
+else
+  echo "don't know how to handle dataset $watermark_data_path"
+  exit 1
+fi
+
+watermark_output_dir="$repo/watermarking/outputs/${dataset}/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-${num_summary}/loss_cl${cl_weight}-tl${tl_weight}-wneg${neg_weight}-margin${margin}"
+
+watermark_output_file="$watermark_output_dir/wm-${wm_dataset_name}-alpha${alpha}-delta${delta_0}|${delta}.csv"
+eda_output_file="$watermark_output_dir/wm-${wm_dataset_name}-alpha${alpha}-delta${delta_0}|${delta}-sim.csv"
 
 bash watermarking/run_watermark.sh \
   --gpu_id $gpu_id \
   --embed_map_model $embed_map_model \
-  --data_path $watermark_data_path \
+  --data_path $watermark_data_path --data_size $data_size \
   --watermark_output_file $watermark_output_file \
   --eda_output_file $eda_output_file \
-  --num_of_sent $num_of_sent \
   --alpha $alpha --delta_0 $delta_0 --delta $delta
-
-
-# # add watermarked text
-# data_path="/mnt/data2/lian/projects/watermark/watermark-simcse/watermarking/outputs/end2end/c4/twitter-roberta-base-sentiment/128batch_2000epochs/sanity-check/llama4-1gpt4-1-wm/onebatch-c4-train-simcse-all-filtered-formatted.csv"
-
-# embed_map_model="${repo}/SimCSE/result/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-wm/end2end-c4-loss_cl${loss_function_id}-wneg${neg_weight}"
-
-
-# for loss_function_id in "${LOSS_FUNCTION_IDS[@]}"; do
-#   for neg_weight in "${NEG_WEIGHTS[@]}"; do
-#     bash SimCSE/run_sup_example_inbatch.sh \
-#       --gpu_id $gpu_id \
-#       --output_dir $embed_map_model \
-#       --batch_size $batch_size \
-#       --train_epochs $train_epochs \
-#       --loss_function_id $loss_function_id \
-#       --num_paraphrased_llama $num_paraphrased_llama \
-#       --num_paraphrased_gpt $num_paraphrased_gpt \
-#       --num_negative_llama $num_negative_llama \
-#       --num_negative_gpt $num_negative_gpt \
-#       --neg_weight $neg_weight \
-#       --model_name $model_name \
-#       --train_file $data_path \
-#       --pooler_type $pooler_type
-    
-#     watermark_output_dir="$repo/watermarking/outputs/end2end/$dataset/${model_name_}/${batch_size}batch_${train_epochs}epochs/sanity-check/llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-wm"
-
-#     bash watermarking/run_watermark.sh \
-#       --gpu_id $gpu_id \
-#       --watermark_output_dir $watermark_output_dir \
-#       --embed_map_model $embed_map_model \
-#       --neg_weight $neg_weight \
-#       --loss_function_id $loss_function_id \
-#       --data_path $data_path
-
-#   done
-# done

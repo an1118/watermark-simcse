@@ -19,6 +19,11 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    --data_size)
+      data_size="$2"
+      shift
+      shift
+      ;;
     --watermark_output_file)
       watermark_output_file="$2"
       shift
@@ -26,11 +31,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --eda_output_file)
       eda_output_file="$2"
-      shift
-      shift
-      ;;
-    --num_of_sent)
-      num_of_sent="$2"
       shift
       shift
       ;;
@@ -65,16 +65,15 @@ cp SimCSE/simcse/models.py watermarking/models_cl.py
 # watermarking
 python watermarking/generation_1step_end2end.py \
     --embed_map_model=$embed_map_model \
-    --num_of_sent=${num_of_sent} \
     --output_file=${watermark_output_file} \
     --alpha=${alpha} --delta_0=$delta_0 --delta=$delta \
     --data_path ${data_path} \
+    --data_size ${data_size}
     # --correct_grammar=false
 
 # ===== get similarity after 0-1 mapping =====
 python watermarking/eda_1step_end2end.py \
     --embed_map_model=$embed_map_model \
-    --num_of_sent=${num_of_sent} \
     --output_file=${eda_output_file} \
     --alpha=${alpha} --delta_0=$delta_0 --delta=$delta \
     --result_file=${watermark_output_file}
@@ -83,7 +82,6 @@ python watermarking/eda_1step_end2end.py \
 # CUDA_VISIBLE_DEVICES=$gpu_id python watermarking/eda_1step_end2end_multi-attack.py \
 #     --embed_map_model=$embed_map_model \
 #     --hard_negative_weight=$HARD_NEGATIVE_WEIGHT \
-#     --num_of_sent=${num_of_sent} \
 #     --output_file=${eda_output_file} \
 #     --alpha=${alpha} --delta_0=$delta_0 --delta=$delta \
 #     --result_file=${watermark_output_file}

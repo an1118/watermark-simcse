@@ -104,7 +104,6 @@ def main(args):
         df['sim_ori_para'] = ''
         df['sim_wm_para'] = ''
 
-    watermark_rate = []  # debug
     distance_type = 'l2'
     for i in tqdm(range(finished, len(df))):
         original_text = df.loc[i, 'original_text']
@@ -149,8 +148,6 @@ if __name__ == '__main__':
                         help='OpenAI API key.')
     parser.add_argument('--output_file', default='outputs', type=str, \
                         help='Output directory.')
-    parser.add_argument('--num_of_sent', default=2, type=int, \
-                        help='Number of sentences to paraphrase.')
     parser.add_argument('--correct_grammar', default=False, type=bool, \
                         help='Correct grammar after adding watermark.')
     parser.add_argument('--embed_map_model', default='', type=str, \
