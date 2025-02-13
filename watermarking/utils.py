@@ -18,13 +18,16 @@ def vocabulary_mapping(vocab_size, model_output_dim, seed=66):
 
 def pre_process(data_path, min_length, data_size=500, num_of_sent=None):
     data = []
-    if 'onebatch' in data_path.lower():
+    if 'sc' in data_path.lower():
         dataset = pd.read_csv(data_path)
-        dataset = dataset['original'].tolist()
-        for text in dataset:
-            text = text.strip()
-            data.append({'text': text})
-            if len(data) ==  data_size:
+        for _, row in dataset.iterrows():
+            text = row['original'].strip()
+            if 'imdb' in data_path.lower() and 'c4' not in data_path.lower():
+                modified_sentiment_ground_truth = row['modified_sentiment_ground_truth']
+                data.append({'text': text, 'modified_sentiment_ground_truth': modified_sentiment_ground_truth})
+            else:
+                data.append({'text': text})
+            if len(data) == data_size:
                 break
     elif 'c4' in data_path.lower():
         dataset = load_dataset('json', data_files=data_path)

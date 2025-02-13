@@ -162,6 +162,30 @@ class ModelArguments:
             "help": "Number of GPT negative examples."
         }
     )
+    num_summary: int = field(
+        default = None,
+        metadata={
+            "help": "Number of GPT generated summary."
+        }
+    )
+    cl_weight: float = field(
+        default = 1.0,
+        metadata={
+            "help": "Weight for contrastive loss."
+        }
+    )
+    tl_weight: float = field(
+        default = 1.0,
+        metadata={
+            "help": "Weight for triplet loss."
+        }
+    )
+    margin: float = field(
+        default = 0.5,
+        metadata={
+            "help": "Margin for triplet loss."
+        }
+    )
     
 
 
@@ -458,16 +482,19 @@ def main():
     paraphrase_gpt_cnames = [cname for cname in column_names if cname.startswith('paraphrase') and cname.endswith('gpt')]
     negative_llama_cnames = [cname for cname in column_names if cname.startswith('spoofing') and cname.endswith('llama')]
     negative_gpt_cnames = [cname for cname in column_names if cname.startswith('spoofing') and cname.endswith('gpt')]
+    summary_cnames = [cname for cname in column_names if cname.startswith('summary') and cname.endswith('gpt')]
 
     num_paraphrased_llama, num_paraphrased_gpt = model_args.num_paraphrased_llama, model_args.num_paraphrased_gpt
     num_negative_llama, num_negative_gpt = model_args.num_negative_llama, model_args.num_negative_gpt
+    num_summary = model_args.num_summary
 
     assert num_paraphrased_llama <= len(paraphrase_llama_cnames), f"Number of LLama paraphrased examples ({num_paraphrased_llama}) exceeds the max number of paraphrases ({len(paraphrase_llama_cnames)})."
     assert num_paraphrased_gpt <= len(paraphrase_gpt_cnames), f"Number of GPT paraphrased examples ({num_paraphrased_gpt}) exceeds the max number of paraphrases ({len(paraphrase_gpt_cnames)})."
     assert num_negative_llama <= len(negative_llama_cnames), f"Number of LLama negative examples ({num_negative_llama}) exceeds the max number of negatives ({len(negative_llama_cnames)})."
     assert num_negative_gpt <= len(negative_gpt_cnames), f"Number of GPT negative examples ({num_negative_gpt}) exceeds the max number of negatives ({len(negative_gpt_cnames)})."
-    
-    paraphrase_cnames = paraphrase_llama_cnames[:num_paraphrased_llama] + paraphrase_gpt_cnames[:num_paraphrased_gpt]
+    assert num_summary <= len(summary_cnames), f"Number of GPT generated summary ({num_summary}) exceeds the max number of summaries ({len(summary_cnames)})."
+
+    paraphrase_cnames = paraphrase_llama_cnames[:num_paraphrased_llama] + paraphrase_gpt_cnames[:num_paraphrased_gpt] + summary_cnames[:num_summary]
     negative_cnames = negative_llama_cnames[:num_negative_llama] + negative_gpt_cnames[:num_negative_gpt]
 
     if 'paraphrase_wm' in column_names:

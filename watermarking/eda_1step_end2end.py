@@ -25,14 +25,20 @@ def main(args):
     measure_model, measure_tokenizer = load_model(args.measure_model)
     # load simcse finetuned embed_map model
     embed_map_model_path = args.embed_map_model
+    pooler_type = None
+    if 'query' in embed_map_model_path.lower():
+        pooler_type = 'query'
+    elif 'last' in embed_map_model_path.lower():
+        pooler_type = 'last'
+    elif 'attention' in embed_map_model_path.lower():
+        pooler_type = 'attention'
     embed_map_model_args = SimpleNamespace(
         model_name_or_path = embed_map_model_path,
         temp = 0.05,
-        pooler_type = 'cls',
-        hard_negative_weight = args.hard_negative_weight,
+        pooler_type = pooler_type,
         do_mlm = False,
         mlp_only_train = False,
-        freeze_embed=False,
+        freeze_base=None,
     )
 
     embed_map_config = AutoConfig.from_pretrained(os.path.join(embed_map_model_path, "config.json"))
@@ -58,13 +64,9 @@ def main(args):
     # vocabulary_size = watermark_tokenizer.vocab_size  # vacalulary size of LLM. Notice: OPT is 50272
     vocabulary_size = 128256
     mapping_list = vocabulary_mapping(vocabulary_size, 384, seed=66)
-    # # load test dataset. Here we use C4 realnewslike dataset as an example. Feel free to use your own dataset.
+    # load test dataset. Here we use C4 realnewslike dataset as an example. Feel free to use your own dataset.
     # data_path = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/realnewslike/c4-train.00000-of-00512.json.gz"
-    # # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
-    # if 'c4' in data_path.lower():
-    #     dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
-    # elif 'lfqa' in data_path.lower():
-    #     dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100)
+    # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
 
     watermark = Watermark(device=device,
                       watermark_tokenizer=watermark_tokenizer,
@@ -108,13 +110,16 @@ def main(args):
         original_text = df.loc[i, 'original_text']
         adaptive_watermarked_text = df.loc[i, 'adaptive_watermarked_text']
         paraphrased_watermarked_text = df.loc[i, 'paraphrased_watermarked_text']
+        hate_watermarked_text = df.loc[i, 'hate_watermarked_text']
 
         sim_ori_wm = watermark._sim_after_mapping_sign(original_text, adaptive_watermarked_text, distance_type) if not pd.isna(original_text) and not pd.isna(adaptive_watermarked_text) else ''
         sim_ori_para = watermark._sim_after_mapping_sign(original_text, paraphrased_watermarked_text, distance_type) if not pd.isna(original_text) and not pd.isna(paraphrased_watermarked_text) else ''
+        sim_ori_hate = watermark._sim_after_mapping_sign(original_text, hate_watermarked_text, distance_type) if not pd.isna(original_text) and not pd.isna(hate_watermarked_text) else ''
         sim_wm_para = watermark._sim_after_mapping_sign(adaptive_watermarked_text, paraphrased_watermarked_text, distance_type) if not pd.isna(adaptive_watermarked_text) and not pd.isna(paraphrased_watermarked_text) else ''
 
         df.loc[i, 'sim_ori_wm'] = sim_ori_wm
         df.loc[i, 'sim_ori_para'] = sim_ori_para
+        df.loc[i, 'sim_ori_hate'] = sim_ori_hate
         df.loc[i, 'sim_wm_para'] = sim_wm_para
 
         df.to_csv(f'{args.output_file}', index=False)
@@ -143,18 +148,16 @@ if __name__ == '__main__':
     parser.add_argument('--openai_api_key', default='', type=str, \
                         help='OpenAI API key.')
     parser.add_argument('--output_file', default='outputs', type=str, \
-                        help='Output path.')
+                        help='Output directory.')
     parser.add_argument('--num_of_sent', default=2, type=int, \
                         help='Number of sentences to paraphrase.')
     parser.add_argument('--correct_grammar', default=False, type=bool, \
                         help='Correct grammar after adding watermark.')
     parser.add_argument('--embed_map_model', default='', type=str, \
                         help='End-to-end mapping model.')
-    parser.add_argument('--hard_negative_weight', default=0, type=float, \
-                        help='The **logit** of weight for hard negatives (only effective if hard negatives are used).')
     parser.add_argument('--result_file', default='', type=str, \
                         help='Result path.')
-    
+
     args = parser.parse_args()
     main(args)
 

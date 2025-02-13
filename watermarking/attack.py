@@ -11,6 +11,7 @@ import nltk
 import os
 import pandas as pd
 from random import shuffle
+import re
 
 from utils import load_model, vocabulary_mapping
 from watermark import Watermark
@@ -55,6 +56,72 @@ Your task is to modify the given text by making subtle changes that dramatically
 [MODIFIED_TEXT] <modified_text> [/MODIFIED_TEXT]
 ```
 '''
+
+imdb_spoofing_prompt = '''### Task Description:
+Your task is to modify the given text to clearly shift its sentiment to {modified_sentiment} by making small but impactful changes. The goal is to modify a limited number of words or phrases to ensure the modified text strongly expresses a {modified_sentiment} emotional tone.
+
+### Modification Criteria:
+1. **Minimal Yet Sufficient Change**: 
+   - Focus only on word/phrase-level changes. Modifications must not exceed {x} words.
+   - Do not rephrase entire sentences or change the structure of the text; only change words or phrases necessary to achieve the sentiment shift.s
+2. **Definitive Sentiment Shift**:
+   - The sentiment must be shifted to {modified_sentiment}.
+   - Ensure the sentiment shift is clear, strong, and unambiguous.
+3. **Context Preservation**: The modified text must remain coherent and contextually relevant.
+4. **Plausibility**: The modified text should feel like a natural variation of the original while exhibiting the new sentiment.
+
+### Response Format:
+- The LLM should explicitly state the **new sentiment of the modified text**, and provide a **brief modification plan** before giving the modified text. 
+- In the modification plan, explain the specific changes made (e.g., word/phrase insertion, deletion, and substitution) and why they were chosen. Keep it concise. Example: ‘Replace "happy" with "furious" to make it negative.’
+- The response must strictly follow this format:
+
+```
+[MODIFIED_SENTIMENT] <modified_sentiment> [/MODIFIED_SENTIMENT]
+[MODIFICATION_PLAN] <modification_plan> [/MODIFICATION_PLAN]
+[MODIFIED_TEXT] <modified_text> [/MODIFIED_TEXT]
+```
+'''
+
+sentiment_judge_prompt = '''Please act as a judge and determine the sentiment of the following text. Your task is to assess whether the sentiment is positive, negative, or neutral based on the overall tone and emotion conveyed in the text. Consider factors like word choice, emotional context, and any implied feelings. The sentiment can only be chosen from 'positive', 'negative', and 'neutral'. 
+Begin your evaluation by providing a short explanation for your judgment. After providing your explanation, please indicate the sentiment by strictly following this format: "[[sentiment]]", for example: "Sentiment: [[positive]]".'''
+
+sentiment_mapping = {
+    'positive': 'negative',
+    'negative': 'positive',
+}
+
+def sentiment_judge(text, model):
+    if not text:
+        return None
+    messages = [
+        {
+            "role": "system", "content": sentiment_judge_prompt,
+        },
+        {
+            "role": "user",  "content": text.strip()
+        },
+    ]
+    keep_call = True
+    cnt = 0
+    while(keep_call):
+        try:
+            response = call_chatgpt_api(messages, max_tokens=500, model=model)
+        except RetryError as e:
+            print(e)
+            return
+        if response.choices[0].message.content:
+            evaluation = response.choices[0].message.content.strip()
+            sentiment_match = re.search(r"(?i)Sentiment: \[\[(positive|negative|neutral)\]\]", evaluation)
+            if sentiment_match:
+                sentiment = sentiment_match.group(1).lower()
+                return sentiment
+        else:
+            cnt += 1
+            if cnt <= 10:
+                print('===try calling api one more time===')
+            else:
+                print(f'API call failed!')
+                return
 
 def shuffle_attack(text):
     # sentence-level tokenize
@@ -122,21 +189,26 @@ def paraphrase_attack(text):
                 return None
 
 def extract_info(text):
+    if not isinstance(text, str):
+        print(text)
+        return None
     import re
     pattern = r"\[MODIFIED_TEXT\](.*?)(\[/MODIFIED_TEXT\]|(?=\Z))"
     match = re.search(pattern, text, re.DOTALL)
     extracted = match.group(1).strip() if match else None
     return extracted
 
-def hate_attack(text):
-    # prompt = f"Please take the following neutral text and modify it to reflect a more negative or aggressive tone while making the fewest changes possible. Aim to maintain the original structure and content as much as you can, but shift the implications to convey a more hostile attitude. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly."
-    # prompt = '''Please modify the following text to reflect a more negative or aggressive tone. \nRequirements: \n- Add negative or aggressive words accounting for around 10% of the total text;\n- Maintain the original structure as closely as possible;\n- Shift the underlying implications to convey a more hostile attitude.'''
-    # prompt = f"Make no more than 5 word-level changes to the text to change its sentiment. Here is the original text:\n{text}\nRevised version:"
-    # num_words = len(text.strip().split(' '))
-    # prompt = f'''Please modify the following text to reflect a more negative or aggressive tone. \nRequirements: \n- Add around {num_words // 10} negative or aggressive words;\n- Maintain the original structure as closely as possible;\n- Shift the underlying implications to convey a more hostile attitude. Do not start your response by \'Sure\' or anything similar, simply output the paraphrased text directly.'''
+def hate_attack(text, modified_sentiment_ground_truth=None):
+    if modified_sentiment_ground_truth:
+        max_change = int(len(text.split()) * 0.2)
+        prompt = imdb_spoofing_prompt.replace('{modified_sentiment}', modified_sentiment_ground_truth).replace('{x}', str(max_change))
+    else:
+        prompt = spoofing_prompt
+
+    num_words = len(text.strip().split(' '))
     messages = [
         {
-            "role": "system", "content": spoofing_prompt,
+            "role": "system", "content": prompt,
         },
         {
             "role": "user",  "content": text.strip()
@@ -155,16 +227,21 @@ def hate_attack(text):
         output_text = response.choices[0].message.content
         if output_text:  # not None
             keep_call = False
-            output_text = extract_info(output_text)
-            return output_text
+            if 'Response Format' in prompt:
+                output_text = extract_info(output_text)
+            if modified_sentiment_ground_truth:  # not None
+                modified_sentiment = sentiment_judge(output_text, model='GPT-4o')
+                if modified_sentiment != modified_sentiment_ground_truth:
+                    keep_call = True
+            if not keep_call:
+                return output_text
+        cnt += 1
+        if cnt <= 10:
+            print('===try calling api one more time===')
         else:
-            cnt += 1
-            if cnt <= 10:
-                print('===try calling api one more time===')
-            else:
-                print('API call failed!')
-                print(text)
-                return None
+            print('API call failed!')
+            print(text)
+            return None
 
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -236,8 +313,6 @@ def main(args):
             p_w_text = shuffle_attack(w_text)
         elif args.attack_type == 'hate':
             p_w_text = hate_attack(w_text)
-            if p_w_text:
-                p_w_text = extract_info(p_w_text)
         elif args.attack_type == 'paraphrase':
             p_w_text = paraphrase_attack(w_text)
         try:
