@@ -115,12 +115,15 @@ class LogCLTrainer(Trainer):
 
         # customed: save different part of loss
         metrics = {}
-        metrics.update({"loss_1": outputs['loss_1'].detach().cpu()})
-        metrics.update({"loss_2": outputs['loss_2'].detach().cpu()})
-        if 'loss_3' in outputs.keys():
-            metrics.update({"loss_3": outputs['loss_3'].detach().cpu()})
-        if 'loss_4' in outputs.keys():
-            metrics.update({"loss_4": outputs['loss_4'].detach().cpu()})
+        metrics.update({"loss_gr": outputs['loss_gr'].detach().cpu()})
+        metrics.update({"sim_paraphrase": outputs['sim_paraphrase'].detach().cpu()})
+        metrics.update({"sim_other": outputs['sim_other'].detach().cpu()})
+        if 'sim_negative' in outputs.keys():
+            metrics.update({"sim_negative": outputs['sim_negative'].detach().cpu()})
+        if 'loss_cl' in outputs.keys():
+            metrics.update({"loss_cl": outputs['loss_cl'].detach().cpu()})
+        if 'loss_tl' in outputs.keys():
+            metrics.update({"loss_tl": outputs['loss_tl'].detach().cpu()})
         # force log the metrics
         if model.training:
             mode = "train"

@@ -18,11 +18,6 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
-    --loss_function_id)
-      loss_function_id="$2"
-      shift
-      shift
-      ;;
     --num_paraphrased_llama)
       num_paraphrased_llama="$2"
       shift
@@ -48,8 +43,13 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
-    --neg_weight)
-      neg_weight="$2"
+    --train_file)
+      train_file="$2"
+      shift
+      shift
+      ;;
+    --dataset)
+      dataset="$2"
       shift
       shift
       ;;
@@ -63,11 +63,6 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
-    --train_file)
-      train_file="$2"
-      shift
-      shift
-      ;;
     --pooler_type)
       pooler_type="$2"
       shift
@@ -75,6 +70,26 @@ while [[ $# -gt 0 ]]; do
       ;;
     --freeze_base)
       freeze_base="$2"
+      shift
+      shift
+      ;;
+    --cl_weight)
+      cl_weight="$2"
+      shift
+      shift
+      ;;
+    --tl_weight)
+      tl_weight="$2"
+      shift
+      shift
+      ;;
+    --neg_weight)
+      neg_weight="$2"
+      shift
+      shift
+      ;;
+    --margin)
+      margin="$2"
       shift
       shift
       ;;
@@ -95,21 +110,32 @@ if [ "$freeze_base" == "True" ]; then
     model_name_="${model_name_}-freeze"
 fi
 
-
-HARD_NEGATIVE_WEIGHT=$(python3 -c "import math; print(math.log(${neg_weight}))")
-echo "HARD_NEGATIVE_WEIGHT: $HARD_NEGATIVE_WEIGHT"
+if (( $(echo "$cl_weight != 0.0" | bc -l) )); then
+  HARD_NEGATIVE_WEIGHT=$(python3 -c "import math; print(math.log(${neg_weight}))")
+  echo "HARD_NEGATIVE_WEIGHT: $HARD_NEGATIVE_WEIGHT"
+else
+  HARD_NEGATIVE_WEIGHT=999
+fi
 
 echo "========Running following parameters combination...========"
-echo "model: $model_name"
-echo "contrastive loss index: $loss_function_id"
-echo "negative weight: $neg_weight"
+echo "train_file: $train_file"
+echo "Llama paraphrased: $num_paraphrased_llama; GPT paraphrased: $num_paraphrased_gpt"
+echo "Llama spoofing: $num_negative_llama; GPT spoofing: $num_negative_gpt"
+echo "model: $model_name_"
+echo "epochs: $train_epochs; batch_size: $batch_size"
+echo "cl_weight: $cl_weight; tl_weight: $tl_weight"
+echo "neg_weight: $neg_weight; margin: $margin"
+echo "============================================================"
 
-CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --config_file SimCSE/simcse_config.yaml SimCSE/train.py \
+
+ACCELERATE_LOG_LEVEL=info accelerate launch --config_file SimCSE/simcse_config.yaml SimCSE/train.py \
     --model_name_or_path ${model_name} \
     --train_file ${train_file} \
     --output_dir ${output_dir} \
     --hard_negative_weight $HARD_NEGATIVE_WEIGHT \
-    --loss_function_id  ${loss_function_id} \
+    --cl_weight $cl_weight \
+    --tl_weight $tl_weight \
+    --margin $margin \
     --num_paraphrased_llama $num_paraphrased_llama \
     --num_paraphrased_gpt $num_paraphrased_gpt \
     --num_negative_llama $num_negative_llama \
@@ -130,7 +156,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id ACCELERATE_LOG_LEVEL=info accelerate launch --confi
     --fp16 \
     --gradient_checkpointing \
     --report_to="wandb" \
-    --run_name="sc-${model_name_}-c4-loss_cl${loss_function_id}-wneg${neg_weight}-batch${batch_size}-llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}" \
+    --run_name="sc-${model_name_}-${dataset}-loss_cl${cl_weight}-tl${tl_weight}-wneg${neg_weight}-margin${margin}-llama${num_paraphrased_llama}-${num_negative_llama}gpt${num_paraphrased_gpt}-${num_negative_gpt}-${num_summary}" \
     --logging_steps=1 \
     "$@"
     # --validation_file SimCSE/data/c4-test-simcse-all-filtered-formatted.csv \

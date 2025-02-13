@@ -48,7 +48,6 @@ def main(args):
         model_name_or_path = embed_map_model_path,
         temp = 0.05,
         pooler_type = pooler_type,
-        hard_negative_weight = args.hard_negative_weight,
         do_mlm = False,
         mlp_only_train = False,
         freeze_base=None,
@@ -82,7 +81,7 @@ def main(args):
     # data_path = r"/mnt/data2/lian/projects/watermark/data/lfqa.json"
     data_path = args.data_path
     if 'sc' in data_path.lower():
-        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=128, num_of_sent=args.num_of_sent)
+        dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=100, num_of_sent=args.num_of_sent)
     elif 'c4' in data_path.lower():
         dataset = pre_process(data_path, min_length=args.min_new_tokens, data_size=50, num_of_sent=args.num_of_sent)   # [{text0: 'text0', text: 'text'}]
     elif 'lfqa' in data_path.lower():
@@ -227,8 +226,6 @@ if __name__ == '__main__':
                         help='Correct grammar after adding watermark.')
     parser.add_argument('--embed_map_model', default='', type=str, \
                         help='End-to-end mapping model.')
-    parser.add_argument('--hard_negative_weight', default=0, type=float, \
-                        help='The **logit** of weight for hard negatives (only effective if hard negatives are used).')
     parser.add_argument('--data_path', default='', type=str, \
                         help='Data Path.')
 

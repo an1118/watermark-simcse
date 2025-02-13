@@ -168,6 +168,24 @@ class ModelArguments:
             "help": "Number of GPT generated summary."
         }
     )
+    cl_weight: float = field(
+        default = 1.0,
+        metadata={
+            "help": "Weight for contrastive loss."
+        }
+    )
+    tl_weight: float = field(
+        default = 1.0,
+        metadata={
+            "help": "Weight for triplet loss."
+        }
+    )
+    margin: float = field(
+        default = 0.5,
+        metadata={
+            "help": "Margin for triplet loss."
+        }
+    )
     
 
 
