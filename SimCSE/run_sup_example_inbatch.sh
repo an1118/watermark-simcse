@@ -122,16 +122,6 @@ else
   HARD_NEGATIVE_WEIGHT=999
 fi
 
-echo "========Running following parameters combination...========"
-echo "train_file: $train_file"
-echo "Llama paraphrased: $num_paraphrased_llama; GPT paraphrased: $num_paraphrased_gpt"
-echo "Llama spoofing: $num_negative_llama; GPT spoofing: $num_negative_gpt"
-echo "model: $model_name_"
-echo "epochs: $train_epochs; batch_size: $batch_size"
-echo "cl_weight: $cl_weight; tl_weight: $tl_weight"
-echo "neg_weight: $neg_weight; margin: $margin"
-echo "============================================================"
-
 
 ACCELERATE_LOG_LEVEL=info accelerate launch --config_file SimCSE/simcse_config.yaml SimCSE/train.py \
     --model_name_or_path ${model_name} \

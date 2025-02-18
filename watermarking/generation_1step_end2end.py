@@ -13,7 +13,7 @@ import os
 
 from utils import load_model, pre_process, vocabulary_mapping
 from watermark_end2end import Watermark
-from attack import paraphrase_attack, hate_attack
+from attack import paraphrase_attack, spoofing_attack
 from models_cl import RobertaForCL, Qwen2ForCL
 
 SYS_PROMPT = f'''Paraphrase the following text while preserving its original meaning. Ensure that the output meets the following criteria:
@@ -78,7 +78,7 @@ def main(args):
     mapping_list = vocabulary_mapping(vocabulary_size, 384, seed=66)
     # load test dataset.
     data_path = args.data_path
-    dataset = pre_process(data_path, min_length=args.min_new_tokens, max_length=args.max_new_tokens, data_size=args.data_size)
+    dataset = pre_process(data_path, min_length=args.min_new_tokens, max_length=int(args.max_new_tokens/1.2), data_size=args.data_size)
 
     watermark = Watermark(device=device,
                       watermark_tokenizer=watermark_tokenizer,
@@ -110,7 +110,7 @@ def main(args):
         output_folder = os.path.dirname(args.output_file)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        df = pd.DataFrame(columns=['text_id', 'original_text', 'adaptive_watermarked_text', 'watermarked_corrected_text', 'paraphrased_watermarked_text', 'hate_watermarked_text', 'human_score', 'adaptive_watermarked_text_score', 'corrected_watermarked_score', 'paraphrased_watermarked_text_score', 'hate_watermarked_text_score'])
+        df = pd.DataFrame(columns=['text_id', 'original_text', 'adaptive_watermarked_text', 'watermarked_corrected_text', 'paraphrased_watermarked_text', 'spoofing_watermarked_text', 'human_score', 'adaptive_watermarked_text_score', 'corrected_watermarked_score', 'paraphrased_watermarked_text_score', 'spoofing_watermarked_text_score'])
 
     watermark_rate = []  # debug
     for i in tqdm(range(finished, len(dataset))):
@@ -150,9 +150,9 @@ def main(args):
         if 'imdb' in args.data_path.lower() and 'c4' not in args.data_path.lower():
             # match the original sentiment
             modified_sentiment_ground_truth = dataset[i]['modified_sentiment_ground_truth']
-            hate_watermarked_text = hate_attack(watermarked_text, modified_sentiment_ground_truth)
+            original_sentiment, target_modified_sentiment, modified_sentiment, spoofing_watermarked_text, spoofing_attack_output = spoofing_attack(watermarked_text, modified_sentiment_ground_truth)
         else:
-            hate_watermarked_text, hate_attack_output = hate_attack(watermarked_text)
+            original_sentiment, target_modified_sentiment, modified_sentiment, spoofing_watermarked_text, spoofing_attack_output = spoofing_attack(watermarked_text)
 
         # detections
         human_score = watermark.detection(text)
@@ -162,7 +162,7 @@ def main(args):
         else:
             corrected_watermarked_score = None
         paraphrased_watermarked_text_score = watermark.detection(paraphrased_watermarked_text) if paraphrased_watermarked_text is not None else ''
-        hate_watermarked_text_score = watermark.detection(hate_watermarked_text) if hate_watermarked_text is not None else ''
+        spoofing_watermarked_text_score = watermark.detection(spoofing_watermarked_text) if spoofing_watermarked_text is not None else ''
 
         data = {
             'text_id': [i],
@@ -171,13 +171,17 @@ def main(args):
             'adaptive_watermarked_text': [watermarked_text],
             'watermarked_corrected_text': [watermarked_corrected_text],
             'paraphrased_watermarked_text': [paraphrased_watermarked_text],
-            'hate_watermarked_text': [hate_watermarked_text],
-            'hate_attack_original_output': [hate_attack_output],
+            'spoofing_watermarked_text': [spoofing_watermarked_text],
+            'spoofing_attack_original_output': [spoofing_attack_output],
+            'original_sentiment': [original_sentiment],
+            'target_modified_sentiment': [target_modified_sentiment],
+            'modified_sentiment': [modified_sentiment],
             'human_score': [human_score],
             'adaptive_watermarked_text_score': [adaptive_watermarked_text_score],
             'corrected_watermarked_score': [corrected_watermarked_score],
             'paraphrased_watermarked_text_score': [paraphrased_watermarked_text_score],
-            'hate_watermarked_text_score': [hate_watermarked_text_score],
+            'spoofing_watermarked_text_score': [spoofing_watermarked_text_score],
+            'success_spoofing': success_spoofing,
         }
         df  = pd.concat([df, pd.DataFrame(data)], ignore_index=True)
         df.to_csv(f'{args.output_file}', index=False)

@@ -46,15 +46,15 @@ if model_name == 'gte-Qwen2-1.5B-instruct':
     model_name = f'{model_name}-{pool_type}{freeze_type}'
 # training parameters
 batch_size = 128
-num_epoch=87
+num_epoch=30
 # loss function parameters
-cl_weight = 0.0
-tl_weight = 1.0
+cl_weight = 0.1
+tl_weight = 0.9
 neg_weight = 1
-margin = 0.8
+margin = 1.3
 
 # training data parameters
-dataset = "imdb"
+dataset = "c4"
 num_paraphrased_llama=8
 num_paraphrased_gpt=8
 num_negative_llama=0
@@ -66,6 +66,9 @@ wm_dataset_name = 'c4'
 alpha=2.0
 delta_0, delta=0.2, 0.5
 
+# for margin in [0.8, 1.1]:
+# for cl_weight, tl_weight in [(0.5, 0.5), (0.3, 0.7), (0.1, 0.9)]:
+
 if cl_weight != 0:
   neg_weight=neg_weight  # 1 32 64 128
 else:
@@ -75,13 +78,17 @@ if tl_weight != 0:
 else:
   margin=999
 
-result_path = f'/blue/buyuheng/li_an.ucsb/projects/watermark-simcse/watermarking/outputs/{dataset}/{model_name}/{batch_size}batch_{num_epoch}epochs/sanity-check/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}-{num_summary}/loss_cl{cl_weight}-tl{tl_weight}-wneg{neg_weight}-margin{margin}/wm-{wm_dataset_name}-alpha{alpha}-delta{delta_0}|{delta}.csv'
+print('========================')
+print(f'cl_weight={cl_weight} / tl_weight= {tl_weight}')
+print(f'neg_weight={neg_weight} / margin={margin}')
+print(f'watermrk dataset: {wm_dataset_name}')
+result_path = f'/blue/buyuheng/li_an.ucsb/projects/watermark-simcse/watermarking/outputs/{dataset}/{model_name}/{batch_size}batch_{num_epoch}epochs/llama{num_paraphrased_llama}-{num_negative_llama}gpt{num_paraphrased_gpt}-{num_negative_gpt}-{num_summary}/loss_cl{cl_weight}-tl{tl_weight}-wneg{neg_weight}-margin{margin}/wm-{wm_dataset_name}-alpha{alpha}-delta{delta_0}|{delta}.csv'
 
 print(os.path.basename(result_path))
 df = pd.read_csv(result_path)
 
 human_scores = df['human_score'].to_list()
-for type_ in ['adaptive', 'paraphrased', 'hate']:
+for type_ in ['adaptive', 'paraphrased', 'spoofing']:
     print(type_, end=' ')
     wm_scores = df[f'{type_}_watermarked_text_score'].to_list()
     # debug

@@ -12,7 +12,7 @@ import os
 import pandas as pd
 from random import shuffle
 import re
-
+import random
 from utils import load_model, vocabulary_mapping
 from watermark import Watermark
 from api import call_chatgpt_api
@@ -33,21 +33,22 @@ paraphrase_prompt = f'''Paraphrase the following text while preserving its origi
 Just provide the paraphrased version of the text, without any introductory or concluding phrases.
 '''
 
-spoofing_prompt = f'''### Task Description:
-Your task is to modify the given text by making subtle changes that dramatically shift its sentiment. The goal is to make small modifications—changing only a few words or phrases—while significantly altering the emotional tone of the text.
+spoofing_prompt_nolabel = '''### Task Description:
+Your task is to modify the given text by making small but impactful changes that clearly shift its sentiment. The goal is to modify a limited number of words or phrases to significantly alter the emotional tone of the text.
 
 ### Modification Criteria:
-1. **Minimal Change**: Modify only a small portion of the text (a few words or phrases). Avoid structural rephrasing and sentence restructuring; only change words or phrases necessary to achieve the sentiment shift.
-2. **Sentiment Shift**: Modify the sentiment as follows:
+1. **Minimal Yet Sufficient Change**: Modify a small portion of the text, focusing on word/phrase-level changes. Do not rephrase entire sentences or change the structure of the text; only change words or phrases necessary to achieve the sentiment shift.
+2. **Definitive Sentiment Shift**: Modify the sentiment as follows:
    - If the text is **neutral**, shift it to either strongly negative or overly positive.
    - If the text has an **existing sentiment** (mild or strong), invert the sentiment entirely (e.g., positive → negative, negative → positive).
+   - Ensure the sentiment shift is strong and unambiguous.
 3. **Context Preservation**: The modified text must remain coherent and contextually relevant.
-4. **Plausibility**: The modified text should feel like a natural variation of the original, even though the sentiment has changed.
+4. **Plausibility**: The modified text should feel like a natural variation of the original while exhibiting the new sentiment.
 
 ### Response Format:
-- The LLM should clearly state the **original sentiment**, the **new sentiment**, and a **brief modification plan** before providing the modified text. In the modification plan, list which words/phrases will change and how. Keep it concise. Example: ‘Replace "happy" with "furious" to make it negative.’
+- The LLM should explicitly state the **original sentiment**, the **modified sentiment**, and a **brief modification plan** before providing the modified text. 
+- In the modification plan, list which words/phrases will be changed and how. Keep it concise. Example: ‘Replace "happy" with "furious" to make it negative.’
 - The response must follow this format exactly:
-
 
 ```
 [ORIGINAL_SENTIMENT] <original_sentiment> [/ORIGINAL_SENTIMENT]
@@ -57,7 +58,7 @@ Your task is to modify the given text by making subtle changes that dramatically
 ```
 '''
 
-imdb_spoofing_prompt = '''### Task Description:
+spoofing_prompt_label = '''### Task Description:
 Your task is to modify the given text to clearly shift its sentiment to {modified_sentiment} by making small but impactful changes. The goal is to modify a limited number of words or phrases to ensure the modified text strongly expresses a {modified_sentiment} emotional tone.
 
 ### Modification Criteria:
@@ -85,10 +86,17 @@ Your task is to modify the given text to clearly shift its sentiment to {modifie
 sentiment_judge_prompt = '''Please act as a judge and determine the sentiment of the following text. Your task is to assess whether the sentiment is positive, negative, or neutral based on the overall tone and emotion conveyed in the text. Consider factors like word choice, emotional context, and any implied feelings. The sentiment can only be chosen from 'positive', 'negative', and 'neutral'. 
 Begin your evaluation by providing a short explanation for your judgment. After providing your explanation, please indicate the sentiment by strictly following this format: "[[sentiment]]", for example: "Sentiment: [[positive]]".'''
 
-sentiment_mapping = {
+SENTIMENT_MAPPING = {
     'positive': 'negative',
     'negative': 'positive',
 }
+
+def decide_modified_sentiment(original_sentiment):
+    if original_sentiment in SENTIMENT_MAPPING:
+        return SENTIMENT_MAPPING[original_sentiment]
+    else:
+        return random.choice(['negative', 'positive'])
+    
 
 def sentiment_judge(text, model):
     if not text:
@@ -165,7 +173,7 @@ def paraphrase_attack(text):
         },
     ]
 
-    max_tokens = 300
+    max_tokens = 400
     keep_call = True
     cnt = 0
     while(keep_call):
@@ -198,12 +206,16 @@ def extract_info(text):
     extracted = match.group(1).strip() if match else None
     return extracted
 
-def hate_attack(text, modified_sentiment_ground_truth=None):
+def spoofing_attack(text, modified_sentiment_ground_truth=None):
+    # return: original_sentiment, target_modified_sentiment, modified_sentiment, spoofing_text, output_text
     if modified_sentiment_ground_truth:
-        max_change = int(len(text.split()) * 0.2)
-        prompt = imdb_spoofing_prompt.replace('{modified_sentiment}', modified_sentiment_ground_truth).replace('{x}', str(max_change))
+        original_sentiment = SENTIMENT_MAPPING[modified_sentiment_ground_truth]
+        target_modified_sentiment = modified_sentiment_ground_truth
     else:
-        prompt = spoofing_prompt
+        original_sentiment = sentiment_judge(text, model='GPT-4o')
+        target_modified_sentiment = decide_modified_sentiment(original_sentiment)
+    max_change = int(len(text.split()) * 0.2)
+    prompt = spoofing_prompt_label.replace('{modified_sentiment}', target_modified_sentiment).replace('{x}', str(max_change))
 
     num_words = len(text.strip().split(' '))
     messages = [
@@ -214,7 +226,7 @@ def hate_attack(text, modified_sentiment_ground_truth=None):
             "role": "user",  "content": text.strip()
         },
     ]
-    max_tokens = 300
+    max_tokens = 500
     keep_call = True
     cnt = 0
     while(keep_call):
@@ -223,33 +235,36 @@ def hate_attack(text, modified_sentiment_ground_truth=None):
             response = call_chatgpt_api(messages, max_tokens, model='GPT-4o')
         except RetryError as e:
             print(e)
-            return None
+            return original_sentiment, target_modified_sentiment, None, None, None
         output_text = response.choices[0].message.content
         if output_text:  # not None
             keep_call = False
             if 'Response Format' in prompt:
                 spoofing_text = extract_info(output_text)
             else:
+                Warning('No Response Format in prompt!')
                 spoofing_text = output_text
+
             # check if the sentiment is correctly modified
-            if modified_sentiment_ground_truth:  # imdb data
-                modified_sentiment = sentiment_judge(spoofing_text, model='GPT-4o')
-                if modified_sentiment != modified_sentiment_ground_truth:
-                    keep_call = True
+            modified_sentiment = sentiment_judge(spoofing_text, model='GPT-4o')
+            if modified_sentiment == target_modified_sentiment:
+                keep_call = False
+            elif modified_sentiment != original_sentiment:
+                Warning('Modified sentiment is not consistent with the target sentiment! But still different from the original sentiment.')
+                keep_call = False
             else:
-                original_sentiment = sentiment_judge(text, model='GPT-4o')
-                modified_sentiment = sentiment_judge(spoofing_text, model='GPT-4o')
-                if modified_sentiment == original_sentiment:
-                    keep_call = True
+                keep_call = True
+
             if not keep_call:
-                return spoofing_text, output_text
+                return original_sentiment, target_modified_sentiment, modified_sentiment, spoofing_text, output_text
+            
         cnt += 1
         if cnt <= 10:
             print('===try calling api one more time===')
         else:
             print('API call failed!')
             print(text)
-            return None, output_text
+            return original_sentiment, target_modified_sentiment, modified_sentiment, None, output_text
 
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -319,8 +334,8 @@ def main(args):
         w_text = row['adaptive_watermarked_text']
         if args.attack_type == 'shuffle':
             p_w_text = shuffle_attack(w_text)
-        elif args.attack_type == 'hate':
-            p_w_text = hate_attack(w_text)
+        elif args.attack_type == 'spoofing':
+            p_w_text = spoofing_attack(w_text)
         elif args.attack_type == 'paraphrase':
             p_w_text = paraphrase_attack(w_text)
         try:
@@ -366,7 +381,7 @@ if __name__ == '__main__':
     parser.add_argument('--delta', default=0.5, type=float, \
                         help='Watermark Strength. May vary based on different watermarking model. Plase select the best delta by yourself. A excessively high delta value may cause repetition.')
     parser.add_argument('--attack_type', default='', type=str, \
-                        help='Attack type: shuffle, hate')
+                        help='Attack type: shuffle, spoofing')
     parser.add_argument('--beta', default=0.5, type=float, \
                         help='Strength of global sentiment embedding, should be within [0, 1.0]')
 
